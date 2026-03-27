@@ -33,3 +33,5 @@ go.work.sum
 
 emu
 emu.exe
+*.cer
+*.key
