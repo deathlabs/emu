@@ -32,4 +32,5 @@ go.work.sum
 # .vscode/
 
 emu
-emu.exe
+*.cer
+*.key

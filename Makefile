@@ -12,4 +12,4 @@
 .SILENT: build
 
 build: 
-	go build -ldflags="-s -w" -o emu main.go
+	go install -ldflags="-s -w" .
