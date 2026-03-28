@@ -23,48 +23,81 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/deathlabs/emu/output"
+	"github.com/deathlabs/emu/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func getConfig(cmd *cobra.Command, args []string) {
-	viper.AddConfigPath("$HOME")
-	viper.SetConfigName(".emu")
-	viper.SetConfigType("yaml")
-
-	err := viper.ReadInConfig()
-
-	if err != nil {
-		panic(fmt.Errorf("fatal error config file: %w", err))
-	}
-
-	fmt.Println(viper.Get("name"))
+var createConfigCmd = &cobra.Command{
+	Use:   "config",
+	Short: "Create an EMU config",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("create config called")
+	},
 }
 
-// configCmd represents the config command
-var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+func loadConfig() error {
+	var (
+		err  error
+		home string
+	)
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: getConfig,
+	if configFile != "" {
+		viper.SetConfigFile(configFile)
+	} else {
+		home, err = os.UserHomeDir()
+		if err != nil {
+			return err
+		}
+
+		viper.AddConfigPath(home)
+		viper.SetConfigName(".emu")
+		viper.SetConfigType("yaml")
+	}
+
+	viper.SetDefault("timeout", 30)
+	viper.SetDefault("output_format", outputFormat)
+	viper.SetDefault("headers", map[string]string{
+		"User-Agent": "emu/v4.0.0",
+	})
+
+	viper.SetEnvPrefix("EMASS")
+	viper.AutomaticEnv()
+
+	err = viper.ReadInConfig()
+	if err != nil {
+		return err
+	}
+
+	viper.Get("emass")
+
+	return nil
+}
+
+func getConfig(cmd *cobra.Command, args []string) {
+	var (
+		config types.Config
+		err    error
+	)
+	err = viper.Unmarshal(&config)
+
+	if err != nil {
+		fmt.Printf("Error reading config: %v\n", err)
+		os.Exit(1)
+	}
+	output.Config(config, outputFormat)
+}
+
+var getConfigCmd = &cobra.Command{
+	Use:   "config",
+	Short: "Print your EMU config",
+	Run:   getConfig,
 }
 
 func init() {
-	getCmd.AddCommand(configCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// configCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// configCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	createCmd.AddCommand(createConfigCmd)
+	getCmd.AddCommand(getConfigCmd)
 }
