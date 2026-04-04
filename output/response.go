@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/deathlabs/emu/types"
+	"github.com/deathlabs/emu/models"
 )
 
-func Response(response types.ResponseData, format string) {
+func Response(response models.ResponseData, format string) {
 	switch strings.ToLower(format) {
 	case "json":
 		ToJSON(response)

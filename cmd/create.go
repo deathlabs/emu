@@ -27,14 +27,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var createCmd = &cobra.Command{
-	Use:   "create",
-	Short: "A brief description of your command",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("create called")
-	},
+var (
+	createCmd = &cobra.Command{
+		Use:   "create",
+		Short: "Create evidence in eMASS",
+	}
+)
+
+func createPoam(cmd *cobra.Command, args []string) {
+	fmt.Println("emu create poam called")
 }
 
 func init() {
+	createCmd.AddCommand(&cobra.Command{
+		Use:   "poam",
+		Short: "Create a POA&M in eMASS",
+		Run:   createPoam,
+	})
 	rootCmd.AddCommand(createCmd)
 }

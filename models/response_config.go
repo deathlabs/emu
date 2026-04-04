@@ -1,4 +1,4 @@
-package types
+package models
 
 type RequestConfig struct {
 	Method       string            `json:"method"`

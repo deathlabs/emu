@@ -1,5 +1,5 @@
 /*
-Copyright © 2026 Vic Fernandez <@cyberphor>
+Copyright © 2026 Vic Fernandez III <@cyberphor>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,24 +25,25 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/deathlabs/emu/models"
 	"github.com/deathlabs/emu/output"
-	"github.com/deathlabs/emu/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var createConfigCmd = &cobra.Command{
-	Use:   "config",
-	Short: "Create an EMU config",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("create config called")
-	},
-}
+var (
+	configCmd = &cobra.Command{
+		Use:   "config",
+		Short: "Print EMU configuration information",
+		Run:   printConfig,
+	}
+)
 
 func loadConfig() error {
 	var (
-		err  error
-		home string
+		config models.Config
+		err    error
+		home   string
 	)
 
 	if configFile != "" {
@@ -58,46 +59,54 @@ func loadConfig() error {
 		viper.SetConfigType("yaml")
 	}
 
-	viper.SetDefault("timeout", 30)
-	viper.SetDefault("output_format", outputFormat)
-	viper.SetDefault("headers", map[string]string{
-		"User-Agent": "emu/v4.0.0",
-	})
-
-	viper.SetEnvPrefix("EMASS")
+	viper.SetEnvPrefix("EMASS_API_KEY")
 	viper.AutomaticEnv()
+	viper.BindEnv("emass.profiles.production.apiKey", "EMASS_API_KEY_PRODUCTION")
+	viper.BindEnv("emass.profiles.pilot.apiKey", "EMASS_API_KEY_PILOT")
 
 	err = viper.ReadInConfig()
 	if err != nil {
 		return err
 	}
 
-	viper.Get("emass")
+	err = viper.Unmarshal(&config)
+	if err != nil {
+		return err
+	}
+
+	for i := range config.Systems {
+		profile, _ := config.FindProfile(config.Systems[i].ProfileName)
+		config.Systems[i].Profile = *profile
+	}
+
+	err = config.Validate()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func getConfig(cmd *cobra.Command, args []string) {
+func printConfig(cmd *cobra.Command, args []string) {
 	var (
-		config types.Config
+		config models.Config
 		err    error
 	)
-	err = viper.Unmarshal(&config)
 
+	err = viper.Unmarshal(&config)
 	if err != nil {
-		fmt.Printf("Error reading config: %v\n", err)
+		fmt.Println(err)
 		os.Exit(1)
 	}
+
 	output.Config(config, outputFormat)
 }
 
-var getConfigCmd = &cobra.Command{
-	Use:   "config",
-	Short: "Print your EMU config",
-	Run:   getConfig,
-}
-
 func init() {
-	createCmd.AddCommand(createConfigCmd)
-	getCmd.AddCommand(getConfigCmd)
+	configCmd.AddCommand(&cobra.Command{
+		Use:   "config",
+		Short: "Print EMU configuration information",
+		Run:   printConfig,
+	})
+	rootCmd.AddCommand(configCmd)
 }

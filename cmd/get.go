@@ -29,12 +29,18 @@ import (
 
 var getCmd = &cobra.Command{
 	Use:   "get",
-	Short: "A brief description of your command",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("get called")
-	},
+	Short: "Get evidence from eMASS",
+}
+
+func getArtifacts(cmd *cobra.Command, args []string) {
+	fmt.Println("emu get artifacts")
 }
 
 func init() {
+	getCmd.AddCommand(&cobra.Command{
+		Use:   "artifacts",
+		Short: "Get data about one or more artifacts",
+		Run:   getArtifacts,
+	})
 	rootCmd.AddCommand(getCmd)
 }

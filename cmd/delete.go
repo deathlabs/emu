@@ -27,14 +27,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var deleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "A brief description of your command",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("delete called")
-	},
+var (
+	deleteCmd = &cobra.Command{
+		Use:   "delete",
+		Short: "Delete evidence in eMASS",
+	}
+)
+
+func deleteArtifact(cmd *cobra.Command, args []string) {
+	fmt.Println("emu delete artifact called")
 }
 
 func init() {
+	deleteCmd.AddCommand(&cobra.Command{
+		Use:   "artifact",
+		Short: "Delete an artifact in eMASS",
+		Run:   deleteArtifact,
+	})
 	rootCmd.AddCommand(deleteCmd)
 }

@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/deathlabs/emu/types"
+	"github.com/deathlabs/emu/models"
 )
 
-func Config(config types.Config, format string) {
+func Config(config models.Config, format string) {
 	switch strings.ToLower(format) {
 	case "json":
 		ToJSON(config)

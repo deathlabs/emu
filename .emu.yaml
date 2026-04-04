@@ -1,0 +1,19 @@
+---
+url: https://connect.emass.apps.mil
+profiles:
+  - name: production
+    publicKeyPath: "production.cer"
+    privateKeyPath: "production.key"
+  - name: pilot
+    publicKeyPath: "pilot.cer"
+    privateKeyPath: "pilot.key"
+systems:
+  - name: Expediton 0
+    id: 1234
+    profile: production
+  - name: Oasis 
+    id: 4567
+    profile: pilot
+settings:
+  output:
+    format: yaml

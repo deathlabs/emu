@@ -22,6 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -30,12 +31,11 @@ import (
 var (
 	configFile   string
 	outputFormat string
+	rootCmd      = &cobra.Command{
+		Use:   "emu",
+		Short: "eMASS Updater (EMU) is a tool for automating eMASS records management.",
+	}
 )
-
-var rootCmd = &cobra.Command{
-	Use:   "emu",
-	Short: "eMASS Updater (EMU) is a tool for automating eMASS records management.",
-}
 
 func Execute() {
 	var err = rootCmd.Execute()
@@ -52,6 +52,7 @@ func init() {
 
 	err = loadConfig()
 	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 }
