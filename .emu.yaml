@@ -1,18 +1,21 @@
 ---
-url: https://connect.emass.apps.mil
+url: http://localhost
 profiles:
   - name: production
-    publicKeyPath: "production.cer"
-    privateKeyPath: "production.key"
+    publicKeyPath: production.cer
+    privateKeyPath: production.key
   - name: pilot
-    publicKeyPath: "pilot.cer"
-    privateKeyPath: "pilot.key"
+    publicKeyPath: pilot.cer
+    privateKeyPath: pilot.key
 systems:
-  - name: Expediton 0
-    id: 1234
+  - name: Skynet
+    id: 1984
     profile: production
-  - name: Oasis 
-    id: 4567
+  - name: Genisys
+    id: 2015
+    profile: pilot
+  - name: Legion
+    id: 2019
     profile: pilot
 settings:
   output:
