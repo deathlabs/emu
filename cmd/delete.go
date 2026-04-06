@@ -35,7 +35,7 @@ var (
 )
 
 func deleteArtifact(cmd *cobra.Command, args []string) {
-	fmt.Println("emu delete artifact called")
+	fmt.Println("emu delete artifact")
 }
 
 func init() {

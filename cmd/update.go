@@ -35,7 +35,7 @@ var (
 )
 
 func updateArtifact(cmd *cobra.Command, args []string) {
-	fmt.Println("emu update artifact called")
+	fmt.Println("emu update artifact")
 }
 
 func init() {

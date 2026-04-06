@@ -33,8 +33,6 @@ func Config(config models.Config, format string) {
 	switch strings.ToLower(format) {
 	case "json":
 		ToJSON(config)
-	case "table":
-		ToTable(config)
 	case "yaml":
 		ToYAML(config)
 	default:

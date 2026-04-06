@@ -35,11 +35,11 @@ var (
 )
 
 func uploadArtifact(cmd *cobra.Command, args []string) {
-	fmt.Println("emu upload artifact called")
+	fmt.Println("emu upload artifact")
 }
 
 func uploadSBOM(cmd *cobra.Command, args []string) {
-	fmt.Println("emu upload sbom called")
+	fmt.Println("emu upload sbom")
 }
 
 func init() {

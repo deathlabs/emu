@@ -35,7 +35,7 @@ var (
 )
 
 func createPoam(cmd *cobra.Command, args []string) {
-	fmt.Println("emu create poam called")
+	fmt.Println("emu create poam")
 }
 
 func init() {

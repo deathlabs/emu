@@ -27,16 +27,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var getCmd = &cobra.Command{
-	Use:   "get",
-	Short: "Get evidence from eMASS",
-}
+var (
+	systemID int
+	getCmd   = &cobra.Command{
+		Use:   "get",
+		Short: "Get evidence from eMASS",
+	}
+)
 
 func getArtifacts(cmd *cobra.Command, args []string) {
-	fmt.Println("emu get artifacts")
+	fmt.Println("emu get artifacts", systemID)
 }
 
 func init() {
+	getCmd.PersistentFlags().IntVarP(&systemID, "system-id", "s", 0, "System ID")
 	getCmd.AddCommand(&cobra.Command{
 		Use:   "artifacts",
 		Short: "Get data about one or more artifacts",

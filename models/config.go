@@ -22,47 +22,68 @@ THE SOFTWARE.
 package models
 
 import (
-	"errors"
-	"fmt"
+	"os"
+	"strings"
+
+	"github.com/spf13/viper"
 )
 
-type Profile struct {
-	Name           string `json:"name" yaml:"name"`
-	APIKey         string `json:"apiKey" yaml:"apiKey"`
-	PublicKeyPath  string `json:"publicKeyPath" yaml:"publicKeyPath"`
-	PrivateKeyPath string `json:"privateKeyPath" yaml:"privateKeyPath"`
-}
-
-type System struct {
-	Name        string  `json:"name" yaml:"name"`
-	ID          int     `json:"id" yaml:"id"`
-	ProfileName string  `json:"profileName" yaml:"profileName"`
-	Profile     Profile `json:"profile" yaml:"profile"`
-}
-
 type Config struct {
-	URL      string    `json:"url" yaml:"url"`
-	Profiles []Profile `json:"profiles" yaml:"profiles"`
-	Systems  []System  `json:"systems" yaml:"systems"`
-	Settings struct {
+	URL            string          `mapstructure:"url" json:"url" yaml:"url"`
+	ConfigProfiles []ConfigProfile `mapstructure:"profiles" json:"profiles" yaml:"profiles"`
+	Systems        []System        `mapstructure:"systems" json:"systems" yaml:"systems"`
+	Settings       struct {
 		Output struct {
-			Format string `json:"format" yaml:"format"`
-		} `json:"output" yaml:"output"`
-	} `json:"settings" yaml:"settings"`
+			Format string `mapstructure:"format" json:"format" yaml:"format"`
+		} `mapstructure:"output" json:"output" yaml:"output"`
+	} `mapstructure:"settings" json:"settings" yaml:"settings"`
 }
 
-func (config *Config) Validate() error {
-	if config.URL == "" {
-		return errors.New("a URL to eMASS was not provided")
+func (config *Config) ResolveProfilesToSystems() {
+	var (
+		ok           bool
+		profile      ConfigProfile
+		profileIndex int
+		profiles     map[string]ConfigProfile = make(map[string]ConfigProfile)
+		profileName  string
+		system       map[string]interface{}
+		systemIndex  int
+		systems      []interface{}
+	)
+
+	// Set each profile's API key using the corresponding environment variable (i.e., EMASS_API_KEY_<PROFILE_NAME>).
+	for _, profile = range config.ConfigProfiles {
+		// Get the current's profile name from configuration.
+		profileName = strings.ToUpper(profile.Name)
+
+		// Get the API key for the current profile using the corresponding environment variable.
+		profile.APIKey = os.Getenv("EMASS_API_KEY_" + profileName)
+
+		// Save the updated profile in the profiles map (required to resolve the systems' profiles in the loop below).
+		profiles[profile.Name] = profile
 	}
-	return nil
-}
 
-func (config *Config) FindProfile(name string) (*Profile, error) {
-	for i := range config.Profiles {
-		if config.Profiles[i].Name == name {
-			return &config.Profiles[i], nil
+	// Save the updated profiles map in the config struct.
+	for profileIndex, profile = range config.ConfigProfiles {
+		config.ConfigProfiles[profileIndex] = profiles[profile.Name]
+	}
+
+	// Get all systems in the config as a slice of interfaces.
+	systems = viper.Get("systems").([]interface{})
+
+	// Resolve the profiles of each system based on the profile name specified in the config.
+	for systemIndex = range config.Systems {
+
+		// Get the current system as a map.
+		system = systems[systemIndex].(map[string]interface{})
+
+		// Get the current system's profile name as a string
+		profileName = system["profile"].(string)
+
+		// Lookup the profile name in the profiles map.
+		profile, ok = profiles[profileName]
+		if ok {
+			config.Systems[systemIndex].ConfigProfile = profile
 		}
 	}
-	return nil, fmt.Errorf("profile %q not found", name)
 }

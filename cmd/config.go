@@ -22,8 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
-	"os"
+	"path/filepath"
 
 	"github.com/deathlabs/emu/models"
 	"github.com/deathlabs/emu/output"
@@ -32,6 +31,7 @@ import (
 )
 
 var (
+	config    models.Config
 	configCmd = &cobra.Command{
 		Use:   "config",
 		Short: "Print EMU configuration information",
@@ -39,30 +39,17 @@ var (
 	}
 )
 
-func loadConfig() error {
+func loadConfig(cmd *cobra.Command, args []string) error {
 	var (
-		config models.Config
-		err    error
-		home   string
+		err error
 	)
 
-	if configFile != "" {
+	if configFile != DefaultConfigFilePath {
+		viper.SetConfigType("yaml")
 		viper.SetConfigFile(configFile)
 	} else {
-		home, err = os.UserHomeDir()
-		if err != nil {
-			return err
-		}
-
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".emu")
-		viper.SetConfigType("yaml")
+		viper.SetConfigFile(filepath.Join(".", DefaultConfigFilePath))
 	}
-
-	viper.SetEnvPrefix("EMASS_API_KEY")
-	viper.AutomaticEnv()
-	viper.BindEnv("emass.profiles.production.apiKey", "EMASS_API_KEY_PRODUCTION")
-	viper.BindEnv("emass.profiles.pilot.apiKey", "EMASS_API_KEY_PILOT")
 
 	err = viper.ReadInConfig()
 	if err != nil {
@@ -74,39 +61,15 @@ func loadConfig() error {
 		return err
 	}
 
-	for i := range config.Systems {
-		profile, _ := config.FindProfile(config.Systems[i].ProfileName)
-		config.Systems[i].Profile = *profile
-	}
-
-	err = config.Validate()
-	if err != nil {
-		return err
-	}
+	config.ResolveProfilesToSystems()
 
 	return nil
 }
 
 func printConfig(cmd *cobra.Command, args []string) {
-	var (
-		config models.Config
-		err    error
-	)
-
-	err = viper.Unmarshal(&config)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
 	output.Config(config, outputFormat)
 }
 
 func init() {
-	configCmd.AddCommand(&cobra.Command{
-		Use:   "config",
-		Short: "Print EMU configuration information",
-		Run:   printConfig,
-	})
 	rootCmd.AddCommand(configCmd)
 }

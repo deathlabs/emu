@@ -23,22 +23,20 @@ package output
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/deathlabs/emu/models"
 )
 
-func Response(response models.ResponseData, format string) {
+func Response(response models.ResponseData, format string) error {
 	switch strings.ToLower(format) {
 	case "json":
 		ToJSON(response)
-	case "table":
-		ToTable(response)
+		return nil
 	case "yaml":
 		ToYAML(response)
+		return nil
 	default:
-		fmt.Printf("Unsupported output format: %s\n", format)
-		os.Exit(1)
+		return fmt.Errorf("unsupported output format: %s", format)
 	}
 }
