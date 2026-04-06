@@ -18,6 +18,34 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/package models
+*/
+package client
 
-type ResponseData = interface{}
+import (
+	"net/http"
+
+	"github.com/deathlabs/emu/models"
+)
+
+func Get(client *http.Client, profile models.ConfigProfile, url string) (*http.Response, error) {
+	var (
+		err      error
+		request  *http.Request
+		response *http.Response
+	)
+
+	request, err = http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Set("api-key", profile.APIKey)
+	request.Header.Set("user-uid", "11111111-1111-1111-1111-111111111111")
+
+	response, err = client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}

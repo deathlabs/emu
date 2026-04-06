@@ -59,6 +59,9 @@ func (config *Config) ResolveProfilesToSystems() {
 		// Get the API key for the current profile using the corresponding environment variable.
 		profile.APIKey = os.Getenv("EMASS_API_KEY_" + profileName)
 
+		// Get the user UID for the current profile using the corresponding environment variable.
+		profile.UserUID = os.Getenv("EMASS_USER_UID_" + profileName)
+
 		// Save the updated profile in the profiles map (required to resolve the systems' profiles in the loop below).
 		profiles[profile.Name] = profile
 	}

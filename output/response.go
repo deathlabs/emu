@@ -24,11 +24,9 @@ package output
 import (
 	"fmt"
 	"strings"
-
-	"github.com/deathlabs/emu/models"
 )
 
-func Response(response models.ResponseData, format string) error {
+func Response(response interface{}, format string) error {
 	switch strings.ToLower(format) {
 	case "json":
 		ToJSON(response)
