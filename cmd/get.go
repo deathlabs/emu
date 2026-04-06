@@ -22,19 +22,17 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
-	"github.com/deathlabs/emu/client"
+	"github.com/deathlabs/emu/emass"
+	"github.com/deathlabs/emu/models"
 	"github.com/deathlabs/emu/output"
 	"github.com/spf13/cobra"
 )
 
 var (
-	systemID int
-	getCmd   = &cobra.Command{
+	getCmd = &cobra.Command{
 		Use:   "get",
 		Short: "Get evidence from eMASS",
 	}
@@ -42,93 +40,88 @@ var (
 
 func getArtifacts(cmd *cobra.Command, args []string) {
 	var (
-		body       []byte
-		err        error
-		httpClient *http.Client
-		parsedBody interface{}
-		response   *http.Response
-		url        string
+		client   *http.Client
+		err      error
+		response *http.Response
+		system   models.System
+		systems  []models.System
+		profile  models.ConfigProfile
+		url      string
 	)
 
-	httpClient, err = client.New(config.Systems[0].ConfigProfile)
+	systems, err = filterSystems(config, activeProfileName, systemIDs)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	url = fmt.Sprintf("%s/api/systems/%d/artifacts", config.URL, systemID)
+	for _, system = range systems {
+		profile = system.ConfigProfile
 
-	response, err = client.Get(httpClient, config.Systems[0].ConfigProfile, url)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer response.Body.Close()
+		client, err = emass.GetClient(profile)
+		if err != nil {
+			fmt.Printf("system %d: %v\n", system.ID, err)
+			continue
+		}
 
-	body, err = io.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+		url = fmt.Sprintf("%s/api/systems/%d/artifacts", config.URL, system.ID)
 
-	err = json.Unmarshal(body, &parsedBody)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+		response, err = emass.Get(client, profile, url)
+		if err != nil {
+			fmt.Printf("system %d: %v\n", system.ID, err)
+			continue
+		}
 
-	err = output.Response(parsedBody.(map[string]interface{})["data"], outputFormat)
-	if err != nil {
-		fmt.Println(err)
-		return
+		err = output.Response(response, outputFormat)
+		response.Body.Close()
+		if err != nil {
+			fmt.Printf("system %d: %v\n", system.ID, err)
+			continue
+		}
 	}
 }
+
 func getSystems(cmd *cobra.Command, args []string) {
 	var (
-		body       []byte
-		err        error
-		httpClient *http.Client
-		parsedBody interface{}
-		response   *http.Response
-		url        string
+		client   *http.Client
+		err      error
+		profile  models.ConfigProfile
+		profiles []models.ConfigProfile
+		response *http.Response
+		url      string
 	)
 
-	httpClient, err = client.New(config.Systems[0].ConfigProfile)
+	profiles, err = filterProfiles(config, activeProfileName)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	url = fmt.Sprintf("%s/api/systems", config.URL)
+	for _, profile = range profiles {
+		client, err = emass.GetClient(profile)
+		if err != nil {
+			fmt.Printf("profile %s: %v\n", profile.Name, err)
+			continue
+		}
 
-	response, err = client.Get(httpClient, config.Systems[0].ConfigProfile, url)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer response.Body.Close()
+		url = fmt.Sprintf("%s/api/systems", config.URL)
 
-	body, err = io.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+		response, err = emass.Get(client, profile, url)
+		if err != nil {
+			fmt.Printf("profile %s: %v\n", profile.Name, err)
+			continue
+		}
 
-	err = json.Unmarshal(body, &parsedBody)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	err = output.Response(parsedBody.(map[string]interface{})["data"], outputFormat)
-	if err != nil {
-		fmt.Println(err)
-		return
+		err = output.Response(response, outputFormat)
+		response.Body.Close()
+		if err != nil {
+			fmt.Printf("profile %s: %v\n", profile.Name, err)
+			continue
+		}
 	}
 }
 
 func init() {
-	getCmd.PersistentFlags().IntVarP(&systemID, "system-id", "s", 0, "System ID")
 	getCmd.AddCommand(&cobra.Command{
 		Use:   "artifacts",
 		Short: "Get data about one or more artifacts",

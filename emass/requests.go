@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package client
+package emass
 
 import (
 	"net/http"
@@ -40,7 +40,7 @@ func Get(client *http.Client, profile models.ConfigProfile, url string) (*http.R
 	}
 
 	request.Header.Set("api-key", profile.APIKey)
-	request.Header.Set("user-uid", "11111111-1111-1111-1111-111111111111")
+	request.Header.Set("user-uid", profile.UserUID)
 
 	response, err = client.Do(request)
 	if err != nil {

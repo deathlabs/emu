@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package client
+package emass
 
 import (
 	"crypto/tls"
@@ -86,7 +86,7 @@ func getTransport(publicKeyPath string, privateKeyPath string) (*http.Transport,
 	return transport, nil
 }
 
-func New(profile models.ConfigProfile) (*http.Client, error) {
+func GetClient(profile models.ConfigProfile) (*http.Client, error) {
 	var (
 		client    *http.Client
 		err       error
