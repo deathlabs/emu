@@ -9,8 +9,13 @@ make
 
 **Step 2.** Set your eMASS API keys as environment variables. 
 ```bash
-export $EMASS_API_KEY_PRODUCTION="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-export $EMASS_API_KEY_PILOT="bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+# Profile 1
+export EMASS_USER_UID_PRODUCTION="1234567890"
+export EMASS_API_KEY_PRODUCTION="aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+
+# Profile 2
+export EMASS_USER_UID_PILOT="0987654321"
+export EMASS_API_KEY_PILOT="bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
 ```
 
 **Step 3.** Create an `emu` configuration file. Below is an example of what it should look like. 
@@ -41,6 +46,44 @@ settings:
 
 **Step 4.** Run `emu`.
 ```bash
-emu get artifacts --system-id 1984
+emu get systems
 ```
 
+You should get output similar to below. 
+```json
+[
+  {
+    "acronym": "SKY",
+    "description": "Autonomous defense network managed by Cyberdyne Systems.",
+    "name": "Skynet",
+    "owningOrganization": "Cyberdyne Systems",
+    "policy": "RMF",
+    "registrationType": "Assess and Authorize",
+    "securityPlanApprovalDate": 1638741660,
+    "securityPlanApprovalStatus": "Approved",
+    "systemId": 5050
+  },
+  {
+    "acronym": "LGN",
+    "description": "Next-generation autonomous threat platform managed by Cyberdyne Systems.",
+    "name": "Legion",
+    "owningOrganization": "Cyberdyne Systems",
+    "policy": "RMF",
+    "registrationType": "Assess and Authorize",
+    "securityPlanApprovalDate": null,
+    "securityPlanApprovalStatus": "Not Yet Approved",
+    "systemId": 666
+  },
+  {
+    "acronym": "GNS",
+    "description": "Integrated global operating system managed by Cyberdyne Systems.",
+    "name": "Genisys",
+    "owningOrganization": "Cyberdyne Systems",
+    "policy": "RMF",
+    "registrationType": "Assess and Authorize",
+    "securityPlanApprovalDate": 1700000000,
+    "securityPlanApprovalStatus": "Approved",
+    "systemId": 1337
+  }
+]
+```

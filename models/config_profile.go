@@ -31,6 +31,7 @@ type ConfigProfile struct {
 	PublicKeyPath  string `mapstructure:"publicKeyPath"  json:"publicKeyPath"  yaml:"publicKeyPath"`
 	PrivateKeyPath string `mapstructure:"privateKeyPath" json:"privateKeyPath" yaml:"privateKeyPath"`
 	APIKey         string `mapstructure:"-"              json:"apiKey"         yaml:"apiKey"`
+	UserUID        string `mapstructure:"-"              json:"userUID"        yaml:"userUID"`
 }
 
 func (profile ConfigProfile) MaskedAPIKey() string {
@@ -48,6 +49,21 @@ func (profile ConfigProfile) MaskedAPIKey() string {
 	return strings.Repeat("*", apiKeyLength-4) + lastFourCharacters
 }
 
+func (profile ConfigProfile) MaskedUserUID() string {
+	var (
+		userUIDLength      int
+		lastFourCharacters string
+	)
+
+	if len(profile.UserUID) == 0 {
+		return ""
+	}
+
+	userUIDLength = len(profile.UserUID)
+	lastFourCharacters = profile.UserUID[userUIDLength-4:]
+	return strings.Repeat("*", userUIDLength-4) + lastFourCharacters
+}
+
 func (profile ConfigProfile) MarshalYAML() (interface{}, error) {
 	// Create an alias to avoid infinite recursion when calling yaml.Marshal within this method.
 	type Alias ConfigProfile
@@ -58,6 +74,7 @@ func (profile ConfigProfile) MarshalYAML() (interface{}, error) {
 		PublicKeyPath  string `yaml:"publicKeyPath"`
 		PrivateKeyPath string `yaml:"privateKeyPath"`
 		APIKey         string `yaml:"apiKey"`
+		UserUID        string `yaml:"userUID"`
 	}
 
 	// Return the config profile with the masked API key and no errors.
@@ -66,6 +83,7 @@ func (profile ConfigProfile) MarshalYAML() (interface{}, error) {
 		PublicKeyPath:  profile.PublicKeyPath,
 		PrivateKeyPath: profile.PrivateKeyPath,
 		APIKey:         profile.MaskedAPIKey(),
+		UserUID:        profile.MaskedUserUID(),
 	}, nil
 }
 
@@ -76,12 +94,14 @@ func (profile ConfigProfile) MarshalJSON() ([]byte, error) {
 	// Create a new struct that embeds the alias and adds the masked API key field.
 	type Output struct {
 		Alias
-		APIKey string `json:"apiKey"`
+		APIKey  string `json:"apiKey"`
+		UserUID string `json:"userUID"`
 	}
 
 	// Return the config profile with the masked API key and no errors.
 	return json.Marshal(Output{
-		Alias:  Alias(profile),
-		APIKey: profile.MaskedAPIKey(),
+		Alias:   Alias(profile),
+		APIKey:  profile.MaskedAPIKey(),
+		UserUID: profile.MaskedUserUID(),
 	})
 }
