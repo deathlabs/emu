@@ -27,15 +27,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	DefaultConfigFilePath = ".emu.yaml"
+	DefaultOutputFormat   = "json"
+)
+
 var (
 	configFile   string
 	outputFormat string
+	rootCmd      = &cobra.Command{
+		Use:   "emu",
+		Short: "eMASS Updater (EMU) is a tool for automating eMASS records management.",
+	}
 )
-
-var rootCmd = &cobra.Command{
-	Use:   "emu",
-	Short: "eMASS Updater (EMU) is a tool for automating eMASS records management.",
-}
 
 func Execute() {
 	var err = rootCmd.Execute()
@@ -45,13 +49,10 @@ func Execute() {
 }
 
 func init() {
-	var err error
+	// Register flags.
+	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", DefaultConfigFilePath, "Config filepath")
+	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", DefaultOutputFormat, "Output format (json or yaml)")
 
-	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "Config file (default is $HOME/.emu.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "json", "Output format (json, yaml, table)")
-
-	err = loadConfig()
-	if err != nil {
-		os.Exit(1)
-	}
+	// Load the config before executing the root command (i.e., any command).
+	rootCmd.PersistentPreRunE = loadConfig
 }

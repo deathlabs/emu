@@ -27,14 +27,31 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var uploadCmd = &cobra.Command{
-	Use:   "upload",
-	Short: "A brief description of your command",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("upload called")
-	},
+var (
+	uploadCmd = &cobra.Command{
+		Use:   "upload",
+		Short: "Upload evidence in eMASS",
+	}
+)
+
+func uploadArtifact(cmd *cobra.Command, args []string) {
+	fmt.Println("emu upload artifact")
+}
+
+func uploadSBOM(cmd *cobra.Command, args []string) {
+	fmt.Println("emu upload sbom")
 }
 
 func init() {
+	uploadCmd.AddCommand(&cobra.Command{
+		Use:   "artifact",
+		Short: "Upload an artifact to eMASS",
+		Run:   uploadArtifact,
+	})
+	uploadCmd.AddCommand(&cobra.Command{
+		Use:   "sbom",
+		Short: "Upload an sbom to eMASS",
+		Run:   uploadSBOM,
+	})
 	rootCmd.AddCommand(uploadCmd)
 }

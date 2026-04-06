@@ -1,0 +1,22 @@
+---
+url: http://localhost
+profiles:
+  - name: production
+    publicKeyPath: production.cer
+    privateKeyPath: production.key
+  - name: pilot
+    publicKeyPath: pilot.cer
+    privateKeyPath: pilot.key
+systems:
+  - name: Skynet
+    id: 1984
+    profile: production
+  - name: Genisys
+    id: 2015
+    profile: pilot
+  - name: Legion
+    id: 2019
+    profile: pilot
+settings:
+  output:
+    format: yaml

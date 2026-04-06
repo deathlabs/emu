@@ -19,22 +19,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package models
 
-import (
-	"fmt"
-
-	"github.com/spf13/cobra"
-)
-
-var sbomCmd = &cobra.Command{
-	Use:   "sbom",
-	Short: "A brief description of your command",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("sbom called")
-	},
-}
-
-func init() {
-	uploadCmd.AddCommand(sbomCmd)
+type System struct {
+	ID            int           `mapstructure:"id" json:"id" yaml:"id"`
+	Name          string        `mapstructure:"name" json:"name" yaml:"name"`
+	ConfigProfile ConfigProfile `mapstructure:"-" json:"profile" yaml:"profile"`
 }

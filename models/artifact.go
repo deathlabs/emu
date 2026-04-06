@@ -19,22 +19,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package models
 
-import (
-	"fmt"
-
-	"github.com/spf13/cobra"
-)
-
-var artifactsCmd = &cobra.Command{
-	Use:   "artifacts",
-	Short: "A brief description of your command",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("artifacts called")
-	},
-}
-
-func init() {
-	getCmd.AddCommand(artifactsCmd)
-}
+type artifact struct{}

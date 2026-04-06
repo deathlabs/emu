@@ -27,14 +27,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var updateCmd = &cobra.Command{
-	Use:   "update",
-	Short: "A brief description of your command",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("update called")
-	},
+var (
+	updateCmd = &cobra.Command{
+		Use:   "update",
+		Short: "Update evidence in eMASS",
+	}
+)
+
+func updateArtifact(cmd *cobra.Command, args []string) {
+	fmt.Println("emu update artifact")
 }
 
 func init() {
+	updateCmd.AddCommand(&cobra.Command{
+		Use:   "artifact",
+		Short: "Update an artifact to eMASS",
+		Run:   updateArtifact,
+	})
 	rootCmd.AddCommand(updateCmd)
 }

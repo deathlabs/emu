@@ -18,23 +18,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/
-package cmd
+*/package models
 
-import (
-	"fmt"
+import "time"
 
-	"github.com/spf13/cobra"
-)
-
-var artifactCmd = &cobra.Command{
-	Use:   "artifact",
-	Short: "A brief description of your command",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("artifact called")
-	},
-}
-
-func init() {
-	uploadCmd.AddCommand(artifactCmd)
+type ResponseData struct {
+	Status     string              `json:"status"`
+	StatusCode int                 `json:"status_code"`
+	Headers    map[string][]string `json:"headers"`
+	Body       interface{}         `json:"body"`
+	Timestamp  time.Time           `json:"timestamp"`
+	Duration   time.Duration       `json:"duration"`
 }
