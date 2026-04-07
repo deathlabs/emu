@@ -60,8 +60,9 @@ func getTLSConfig(publicKeyPath string, privateKeyPath string) (*tls.Config, err
 	}
 
 	config = &tls.Config{
-		Certificates: certificates,
-		MinVersion:   tls.VersionTLS12,
+		Certificates:  certificates,
+		MinVersion:    tls.VersionTLS12,
+		Renegotiation: tls.RenegotiateOnceAsClient,
 	}
 
 	return config, nil

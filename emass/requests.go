@@ -47,6 +47,7 @@ func Get(profile models.ConfigProfile, url string) (*http.Response, error) {
 
 	request.Header.Set("api-key", profile.APIKey)
 	request.Header.Set("user-uid", profile.UserUID)
+	request.Header.Set("Content-Type", "application/json")
 
 	response, err = client.Do(request)
 	if err != nil {
