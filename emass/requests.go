@@ -27,12 +27,18 @@ import (
 	"github.com/deathlabs/emu/models"
 )
 
-func Get(client *http.Client, profile models.ConfigProfile, url string) (*http.Response, error) {
+func Get(profile models.ConfigProfile, url string) (*http.Response, error) {
 	var (
+		client   *http.Client
 		err      error
 		request  *http.Request
 		response *http.Response
 	)
+
+	client, err = GetClient(profile)
+	if err != nil {
+		return nil, err
+	}
 
 	request, err = http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {

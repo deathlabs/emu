@@ -40,7 +40,6 @@ var (
 
 func getArtifacts(cmd *cobra.Command, args []string) {
 	var (
-		client   *http.Client
 		err      error
 		response *http.Response
 		system   models.System
@@ -57,16 +56,9 @@ func getArtifacts(cmd *cobra.Command, args []string) {
 
 	for _, system = range systems {
 		profile = system.ConfigProfile
-
-		client, err = emass.GetClient(profile)
-		if err != nil {
-			fmt.Printf("system %d: %v\n", system.ID, err)
-			continue
-		}
-
 		url = fmt.Sprintf("%s/api/systems/%d/artifacts", config.URL, system.ID)
 
-		response, err = emass.Get(client, profile, url)
+		response, err = emass.Get(profile, url)
 		if err != nil {
 			fmt.Printf("system %d: %v\n", system.ID, err)
 			continue
@@ -83,7 +75,6 @@ func getArtifacts(cmd *cobra.Command, args []string) {
 
 func getSystems(cmd *cobra.Command, args []string) {
 	var (
-		client   *http.Client
 		err      error
 		profile  models.ConfigProfile
 		profiles []models.ConfigProfile
@@ -98,15 +89,9 @@ func getSystems(cmd *cobra.Command, args []string) {
 	}
 
 	for _, profile = range profiles {
-		client, err = emass.GetClient(profile)
-		if err != nil {
-			fmt.Printf("profile %s: %v\n", profile.Name, err)
-			continue
-		}
-
 		url = fmt.Sprintf("%s/api/systems", config.URL)
 
-		response, err = emass.Get(client, profile, url)
+		response, err = emass.Get(profile, url)
 		if err != nil {
 			fmt.Printf("profile %s: %v\n", profile.Name, err)
 			continue
