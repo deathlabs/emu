@@ -22,6 +22,7 @@ THE SOFTWARE.
 package models
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -89,4 +90,28 @@ func (config *Config) ResolveProfilesToSystems() {
 			config.Systems[systemIndex].ConfigProfile = profile
 		}
 	}
+}
+
+func (config *Config) GetProfileBySystemID(systemID int) (ConfigProfile, error) {
+	var system System
+
+	for _, system = range config.Systems {
+		if system.ID == systemID {
+			return system.ConfigProfile, nil
+		}
+	}
+
+	return ConfigProfile{}, fmt.Errorf("no profile found for system id %d", systemID)
+}
+
+func (config *Config) GetProfileByName(profileName string) (ConfigProfile, error) {
+	var profile ConfigProfile
+
+	for _, profile = range config.ConfigProfiles {
+		if profile.Name == profileName {
+			return profile, nil
+		}
+	}
+
+	return ConfigProfile{}, fmt.Errorf("no profile found for name %s", profileName)
 }

@@ -22,17 +22,36 @@ THE SOFTWARE.
 package output
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"strings"
 )
 
-func Response(response interface{}, format string) error {
+func Response(response *http.Response, format string) error {
+	var (
+		body       []byte
+		err        error
+		parsedBody interface{}
+	)
+
+	body, err = io.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(body, &parsedBody)
+	if err != nil {
+		return err
+	}
+
 	switch strings.ToLower(format) {
 	case "json":
-		ToJSON(response)
+		ToJSON(parsedBody.(map[string]interface{})["data"])
 		return nil
 	case "yaml":
-		ToYAML(response)
+		ToYAML(parsedBody.(map[string]interface{})["data"])
 		return nil
 	default:
 		return fmt.Errorf("unsupported output format: %s", format)

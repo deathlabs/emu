@@ -22,9 +22,13 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 
+	"github.com/deathlabs/emu/models"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -33,13 +37,101 @@ const (
 )
 
 var (
-	configFile   string
-	outputFormat string
-	rootCmd      = &cobra.Command{
+	activeProfileName string
+	config            models.Config
+	configFile        string
+	outputFormat      string
+	rootCmd           = &cobra.Command{
 		Use:   "emu",
 		Short: "eMASS Updater (EMU) is a tool for automating eMASS records management.",
 	}
+	systemIDs []int
 )
+
+func setupEMASSClient(cmd *cobra.Command, args []string) error {
+	var err error
+
+	// Set the config filepath to the default if one is not provided.
+	if configFile != DefaultConfigFilePath {
+		viper.SetConfigType("yaml")
+		viper.SetConfigFile(configFile)
+	} else {
+		viper.SetConfigFile(filepath.Join(".", DefaultConfigFilePath))
+	}
+
+	// Copy the config into memory.
+	err = viper.ReadInConfig()
+	if err != nil {
+		return err
+	}
+
+	// Unmarshal the config into a Config struct.
+	err = viper.Unmarshal(&config)
+	if err != nil {
+		return err
+	}
+
+	// Resolve the profiles for each system in the config.
+	config.ResolveProfilesToSystems()
+
+	return nil
+}
+
+func filterProfiles(config models.Config, activeProfileName string) ([]models.ConfigProfile, error) {
+	var (
+		profile  models.ConfigProfile
+		profiles []models.ConfigProfile
+	)
+
+	if activeProfileName == "" {
+		return config.ConfigProfiles, nil
+	}
+
+	for _, profile = range config.ConfigProfiles {
+		if profile.Name == activeProfileName {
+			profiles = append(profiles, profile)
+			return profiles, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no profile found for name %s", activeProfileName)
+}
+
+func filterSystems(config models.Config, profileName string, systemIDs []int) ([]models.System, error) {
+	var (
+		filteredSystems []models.System
+		system          models.System
+	)
+
+	for _, system = range config.Systems {
+		if profileName != "" && system.ConfigProfile.Name != profileName {
+			continue
+		}
+
+		if len(systemIDs) > 0 && !containsSystemID(systemIDs, system.ID) {
+			continue
+		}
+
+		filteredSystems = append(filteredSystems, system)
+	}
+
+	if len(filteredSystems) == 0 {
+		return nil, fmt.Errorf("no systems matched the requested filters")
+	}
+
+	return filteredSystems, nil
+}
+
+func containsSystemID(ids []int, id int) bool {
+	var current int
+
+	for _, current = range ids {
+		if current == id {
+			return true
+		}
+	}
+	return false
+}
 
 func Execute() {
 	var err = rootCmd.Execute()
@@ -51,8 +143,10 @@ func Execute() {
 func init() {
 	// Register flags.
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", DefaultConfigFilePath, "Config filepath")
+	rootCmd.PersistentFlags().StringVarP(&activeProfileName, "profile", "p", "", "Profile name")
+	getCmd.PersistentFlags().IntSliceVarP(&systemIDs, "system-id", "s", []int{}, "eMASS System ID")
 	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", DefaultOutputFormat, "Output format (json or yaml)")
 
-	// Load the config before executing the root command (i.e., any command).
-	rootCmd.PersistentPreRunE = loadConfig
+	// Setup the eMASS client before executing the root command (i.e., any command).
+	rootCmd.PersistentPreRunE = setupEMASSClient
 }
