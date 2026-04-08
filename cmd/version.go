@@ -37,6 +37,7 @@ var (
 			fmt.Printf("eMASS Updater version: %s\n", emassVersion)
 			fmt.Printf("eMASS API version: %s\n", emuVersion)
 		},
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error { return nil },
 	}
 )
 
