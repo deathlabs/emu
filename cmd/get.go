@@ -35,7 +35,7 @@ import (
 var (
 	getCmd = &cobra.Command{
 		Use:   "get",
-		Short: "Get data from eMASS",
+		Short: "Get data",
 	}
 	getArtifactsCmd = &cobra.Command{
 		Use:   "artifacts",
@@ -49,7 +49,7 @@ var (
 	}
 	getControlCmd = &cobra.Command{
 		Use:   "control",
-		Short: "Get control data from eMASS",
+		Short: "Get data about controls",
 	}
 	getRolesCmd = &cobra.Command{
 		Use:   "roles",

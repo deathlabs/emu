@@ -32,10 +32,10 @@ var (
 	emassVersion = "v3.31.0"
 	versionCmd   = &cobra.Command{
 		Use:   "version",
-		Short: "Print eMASS API and EMU version information",
+		Short: "Print EMU version information",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("eMASS API Version: %s\n", emuVersion)
 			fmt.Printf("eMASS Updater version: %s\n", emassVersion)
+			fmt.Printf("eMASS API version: %s\n", emuVersion)
 		},
 	}
 )

@@ -159,7 +159,7 @@ func init() {
 	// Register flags.
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", DefaultConfigFilePath, "Config file path")
 	rootCmd.PersistentFlags().StringVarP(&activeProfileName, "profile", "p", "", "Config profile name")
-	rootCmd.PersistentFlags().IntSliceVarP(&systemIDs, "system-id", "s", []int{}, "eMASS system ID")
+	rootCmd.PersistentFlags().IntSliceVarP(&systemIDs, "system-id", "s", []int{}, "eMASS system IDs (can specify multiple)")
 	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", DefaultOutputFormat, "Output format (json or yaml)")
 
 	// Setup the eMASS client before executing the root command (i.e., any command).
