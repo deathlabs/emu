@@ -30,7 +30,7 @@ import (
 var (
 	uploadCmd = &cobra.Command{
 		Use:   "upload",
-		Short: "Upload evidence in eMASS",
+		Short: "Upload data to eMASS",
 	}
 )
 

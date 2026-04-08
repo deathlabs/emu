@@ -24,6 +24,7 @@ package cmd
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
@@ -34,18 +35,49 @@ import (
 var (
 	getCmd = &cobra.Command{
 		Use:   "get",
-		Short: "Get evidence from eMASS",
+		Short: "Get data from eMASS",
 	}
+	getArtifactsCmd = &cobra.Command{
+		Use:   "artifacts",
+		Short: "Get data about artifacts",
+		Run:   getArtifacts,
+	}
+	getApprovalsCmd = &cobra.Command{
+		Use:   "approvals",
+		Short: "Get data about control approvals",
+		Run:   getControlApprovals,
+	}
+	getControlCmd = &cobra.Command{
+		Use:   "control",
+		Short: "Get control data from eMASS",
+	}
+	getRolesCmd = &cobra.Command{
+		Use:   "roles",
+		Short: "Get data about system roles",
+		Run:   getRoles,
+	}
+	getSystemsCmd = &cobra.Command{
+		Use:   "systems",
+		Short: "Get data about systems",
+		Run:   getSystems,
+	}
+	getWorkflowsCmd = &cobra.Command{
+		Use:   "workflows",
+		Short: "Get data about workflows",
+		Run:   getWorkflows,
+	}
+	role   string
+	policy string
 )
 
 func getArtifacts(cmd *cobra.Command, args []string) {
 	var (
+		endpoint string
 		err      error
 		response *http.Response
 		system   models.System
 		systems  []models.System
 		profile  models.ConfigProfile
-		url      string
 	)
 
 	systems, err = filterSystems(config, activeProfileName, systemIDs)
@@ -56,9 +88,44 @@ func getArtifacts(cmd *cobra.Command, args []string) {
 
 	for _, system = range systems {
 		profile = system.ConfigProfile
-		url = fmt.Sprintf("%s/api/systems/%d/artifacts", config.URL, system.ID)
+		endpoint = fmt.Sprintf("%s/api/systems/%d/artifacts", config.URL, system.ID)
 
-		response, err = emass.Get(profile, url)
+		response, err = emass.Get(profile, endpoint)
+		if err != nil {
+			fmt.Printf("system %d: %v\n", system.ID, err)
+			continue
+		}
+
+		err = output.Response(response, outputFormat)
+		response.Body.Close()
+		if err != nil {
+			fmt.Printf("system %d: %v\n", system.ID, err)
+			continue
+		}
+	}
+}
+
+func getControlApprovals(cmd *cobra.Command, args []string) {
+	var (
+		endpoint string
+		err      error
+		response *http.Response
+		system   models.System
+		systems  []models.System
+		profile  models.ConfigProfile
+	)
+
+	systems, err = filterSystems(config, activeProfileName, systemIDs)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for _, system = range systems {
+		profile = system.ConfigProfile
+		endpoint = fmt.Sprintf("%s/api/systems/%d/approval/cac", config.URL, system.ID)
+
+		response, err = emass.Get(profile, endpoint)
 		if err != nil {
 			fmt.Printf("system %d: %v\n", system.ID, err)
 			continue
@@ -75,11 +142,75 @@ func getArtifacts(cmd *cobra.Command, args []string) {
 
 func getSystems(cmd *cobra.Command, args []string) {
 	var (
+		endpoint string
 		err      error
 		profile  models.ConfigProfile
 		profiles []models.ConfigProfile
 		response *http.Response
-		url      string
+		system   models.System
+		systems  []models.System
+	)
+
+	// Filter by system if specific systems are requested.
+	if len(systemIDs) != 0 {
+		systems, err = filterSystems(config, activeProfileName, systemIDs)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		for _, system = range systems {
+			profile = system.ConfigProfile
+			endpoint = fmt.Sprintf("%s/api/systems/%d", config.URL, system.ID)
+
+			response, err = emass.Get(profile, endpoint)
+			if err != nil {
+				fmt.Printf("system %d: %v\n", system.ID, err)
+				continue
+			}
+
+			err = output.Response(response, outputFormat)
+			response.Body.Close()
+			if err != nil {
+				fmt.Printf("system %d: %v\n", system.ID, err)
+				continue
+			}
+		}
+	} else {
+		// Filter by profile if no specific systems are requested.
+		profiles, err = filterProfiles(config, activeProfileName)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		for _, profile = range profiles {
+			endpoint = fmt.Sprintf("%s/api/systems", config.URL)
+
+			response, err = emass.Get(profile, endpoint)
+			if err != nil {
+				fmt.Printf("profile %s: %v\n", profile.Name, err)
+				continue
+			}
+
+			err = output.Response(response, outputFormat)
+			response.Body.Close()
+			if err != nil {
+				fmt.Printf("profile %s: %v\n", profile.Name, err)
+				continue
+			}
+		}
+	}
+}
+
+func getRoles(cmd *cobra.Command, args []string) {
+	var (
+		endpoint string
+		err      error
+		params   url.Values
+		profile  models.ConfigProfile
+		profiles []models.ConfigProfile
+		response *http.Response
 	)
 
 	profiles, err = filterProfiles(config, activeProfileName)
@@ -89,9 +220,21 @@ func getSystems(cmd *cobra.Command, args []string) {
 	}
 
 	for _, profile = range profiles {
-		url = fmt.Sprintf("%s/api/systems", config.URL)
+		params = url.Values{}
 
-		response, err = emass.Get(profile, url)
+		if role != "" {
+			params.Set("role", role)
+		}
+		if policy != "" {
+			params.Set("policy", policy)
+		}
+
+		endpoint = fmt.Sprintf("%s/api/system-roles", config.URL)
+		if len(params) > 0 {
+			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
+		}
+
+		response, err = emass.Get(profile, endpoint)
 		if err != nil {
 			fmt.Printf("profile %s: %v\n", profile.Name, err)
 			continue
@@ -106,16 +249,56 @@ func getSystems(cmd *cobra.Command, args []string) {
 	}
 }
 
+func getWorkflows(cmd *cobra.Command, args []string) {
+	var (
+		err      error
+		response *http.Response
+		system   models.System
+		systems  []models.System
+		profile  models.ConfigProfile
+		endpoint string
+	)
+
+	systems, err = filterSystems(config, activeProfileName, systemIDs)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for _, system = range systems {
+		profile = system.ConfigProfile
+		endpoint = fmt.Sprintf("%s/api/systems/%d/approval/pac", config.URL, system.ID)
+
+		response, err = emass.Get(profile, endpoint)
+		if err != nil {
+			fmt.Printf("system %d: %v\n", system.ID, err)
+			continue
+		}
+
+		err = output.Response(response, outputFormat)
+		response.Body.Close()
+		if err != nil {
+			fmt.Printf("system %d: %v\n", system.ID, err)
+			continue
+		}
+	}
+}
+
 func init() {
-	getCmd.AddCommand(&cobra.Command{
-		Use:   "artifacts",
-		Short: "Get data about one or more artifacts",
-		Run:   getArtifacts,
-	})
-	getCmd.AddCommand(&cobra.Command{
-		Use:   "systems",
-		Short: "Get data about one or more systems",
-		Run:   getSystems,
-	})
+	// Define parameters for the "emu get roles" command.
+	getRolesCmd.Flags().StringVarP(&role, "role", "", "", "description")
+	getRolesCmd.Flags().StringVarP(&policy, "policy", "", "", "description")
+
+	// Attach commands to the "emu get control" command
+	getControlCmd.AddCommand(getApprovalsCmd)
+
+	// Attach commands to the "emu get" command
+	getCmd.AddCommand(getArtifactsCmd)
+	getCmd.AddCommand(getControlCmd)
+	getCmd.AddCommand(getRolesCmd)
+	getCmd.AddCommand(getSystemsCmd)
+	getCmd.AddCommand(getWorkflowsCmd)
+
+	// Attach commands to the "emu" command.
 	rootCmd.AddCommand(getCmd)
 }

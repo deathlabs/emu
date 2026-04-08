@@ -48,8 +48,23 @@ var (
 	systemIDs []int
 )
 
+func checkArguments() error {
+	switch outputFormat {
+	case "json", "yaml":
+	default:
+		return fmt.Errorf("invalid output format \"%s\"", outputFormat)
+	}
+	return nil
+}
+
 func setupEMASSClient(cmd *cobra.Command, args []string) error {
 	var err error
+
+	// Check arguments passed to the root command.
+	err = checkArguments()
+	if err != nil {
+		return err
+	}
 
 	// Set the config filepath to the default if one is not provided.
 	if configFile != DefaultConfigFilePath {
@@ -142,9 +157,9 @@ func Execute() {
 
 func init() {
 	// Register flags.
-	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", DefaultConfigFilePath, "Config filepath")
-	rootCmd.PersistentFlags().StringVarP(&activeProfileName, "profile", "p", "", "Profile name")
-	getCmd.PersistentFlags().IntSliceVarP(&systemIDs, "system-id", "s", []int{}, "eMASS System ID")
+	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", DefaultConfigFilePath, "Config file path")
+	rootCmd.PersistentFlags().StringVarP(&activeProfileName, "profile", "p", "", "Config profile name")
+	rootCmd.PersistentFlags().IntSliceVarP(&systemIDs, "system-id", "s", []int{}, "eMASS system ID")
 	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", DefaultOutputFormat, "Output format (json or yaml)")
 
 	// Setup the eMASS client before executing the root command (i.e., any command).

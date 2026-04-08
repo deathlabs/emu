@@ -30,7 +30,7 @@ import (
 var (
 	deleteCmd = &cobra.Command{
 		Use:   "delete",
-		Short: "Delete evidence in eMASS",
+		Short: "Delete data in eMASS",
 	}
 )
 

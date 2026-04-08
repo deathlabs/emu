@@ -30,7 +30,7 @@ import (
 var (
 	updateCmd = &cobra.Command{
 		Use:   "update",
-		Short: "Update evidence in eMASS",
+		Short: "Update data in eMASS",
 	}
 )
 

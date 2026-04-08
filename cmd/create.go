@@ -30,7 +30,7 @@ import (
 var (
 	createCmd = &cobra.Command{
 		Use:   "create",
-		Short: "Create evidence in eMASS",
+		Short: "Create data in eMASS",
 	}
 )
 

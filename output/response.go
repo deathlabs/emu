@@ -31,9 +31,10 @@ import (
 
 func Response(response *http.Response, format string) error {
 	var (
-		body       []byte
-		err        error
-		parsedBody interface{}
+		body     []byte
+		jsonBody interface{}
+		data     interface{}
+		err      error
 	)
 
 	body, err = io.ReadAll(response.Body)
@@ -41,17 +42,19 @@ func Response(response *http.Response, format string) error {
 		return err
 	}
 
-	err = json.Unmarshal(body, &parsedBody)
+	err = json.Unmarshal(body, &jsonBody)
 	if err != nil {
 		return err
 	}
 
+	data = jsonBody.(map[string]interface{})["data"]
+
 	switch strings.ToLower(format) {
 	case "json":
-		ToJSON(parsedBody.(map[string]interface{})["data"])
+		ToJSON(data)
 		return nil
 	case "yaml":
-		ToYAML(parsedBody.(map[string]interface{})["data"])
+		ToYAML(data)
 		return nil
 	default:
 		return fmt.Errorf("unsupported output format: %s", format)
