@@ -37,17 +37,17 @@ var (
 	controlIDs []string
 	getCmd     = &cobra.Command{
 		Use:   "get",
-		Short: "Get data",
+		Short: "Get data about systems, controls, approvals, artifacts, roles, and workflows",
 	}
-	getControlCmd = &cobra.Command{
-		Use:   "control",
+	getControlsCmd = &cobra.Command{
+		Use:   "controls",
 		Short: "Get data about controls",
 		Run:   getControls,
 	}
-	getControlApprovalsCmd = &cobra.Command{
+	getApprovalsCmd = &cobra.Command{
 		Use:   "approvals",
-		Short: "Get data about control approvals",
-		Run:   getControlApprovals,
+		Short: "Get data about approvals",
+		Run:   getApprovals,
 	}
 	getArtifactsCmd = &cobra.Command{
 		Use:   "artifacts",
@@ -56,7 +56,7 @@ var (
 	}
 	getRolesCmd = &cobra.Command{
 		Use:   "roles",
-		Short: "Get data about system roles",
+		Short: "Get data about roles",
 		Run:   getRoles,
 	}
 	getSystemsCmd = &cobra.Command{
@@ -152,7 +152,7 @@ func getControls(cmd *cobra.Command, args []string) {
 	}
 }
 
-func getControlApprovals(cmd *cobra.Command, args []string) {
+func getApprovals(cmd *cobra.Command, args []string) {
 	var (
 		endpoint string
 		err      error
@@ -336,24 +336,22 @@ func getWorkflows(cmd *cobra.Command, args []string) {
 }
 
 func init() {
-	// Define parameters for the "emu get control" command.
-	getControlCmd.PersistentFlags().StringSliceVarP(&controlIDs, "control-id", "", []string{}, "Control IDs")
+	// Define parameters for the "emu get controls" command.
+	getControlsCmd.PersistentFlags().StringSliceVarP(&controlIDs, "control-id", "", []string{}, "Control IDs")
 
 	// Define parameters for the "emu get roles" command.
 	getRolesCmd.Flags().StringVarP(&roleCategory, "category", "", "", "PAC, CAC, or Other")
 	getRolesCmd.Flags().StringVarP(&role, "role", "", "", "ISO, ISSM, SCA, Auditor, AO, etc. (required if --category is used)")
 	getRolesCmd.Flags().StringVarP(&policy, "policy", "", "", "RMF, DIACAP, or Reporting")
 
-	// Attach commands to the "emu get control" command
-	getControlCmd.AddCommand(getControlApprovalsCmd)
-
 	// Attach commands to the "emu get" command
+	getCmd.AddCommand(getApprovalsCmd)
 	getCmd.AddCommand(getArtifactsCmd)
-	getCmd.AddCommand(getControlCmd)
+	getCmd.AddCommand(getControlsCmd)
 	getCmd.AddCommand(getRolesCmd)
 	getCmd.AddCommand(getSystemsCmd)
 	getCmd.AddCommand(getWorkflowsCmd)
 
-	// Attach commands to the "emu" command.
+	// Attach the "emu get" command to the "emu" command.
 	rootCmd.AddCommand(getCmd)
 }
