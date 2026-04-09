@@ -87,3 +87,12 @@ You should get output similar to below.
   }
 ]
 ```
+
+## Examples
+```bash
+# Text goes here.
+emu get roles --category cac --role iso
+
+# Text goes here.
+emu get control --control-id ac-1
+```

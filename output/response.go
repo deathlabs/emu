@@ -47,7 +47,11 @@ func Response(response *http.Response, format string) error {
 		return err
 	}
 
+	// If there is no data, do not print anything.
 	data = jsonBody.(map[string]interface{})["data"]
+	if data == nil {
+		return nil
+	}
 
 	switch strings.ToLower(format) {
 	case "json":
