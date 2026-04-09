@@ -22,6 +22,7 @@ THE SOFTWARE.
 package emass
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/deathlabs/emu/models"
@@ -54,5 +55,6 @@ func Get(profile models.ConfigProfile, url string) (*http.Response, error) {
 		return nil, err
 	}
 
+	fmt.Println(response)
 	return response, nil
 }

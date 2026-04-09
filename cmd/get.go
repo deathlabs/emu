@@ -34,8 +34,9 @@ import (
 )
 
 var (
-	controlIDs []string
-	getCmd     = &cobra.Command{
+	assessmentProcedures []string
+	controlIDs           []string
+	getCmd               = &cobra.Command{
 		Use:   "get",
 		Short: "Get data about systems, controls, approvals, artifacts, roles, and workflows",
 	}
@@ -53,6 +54,11 @@ var (
 		Use:   "artifacts",
 		Short: "Get data about artifacts",
 		Run:   getArtifacts,
+	}
+	getResultsCmd = &cobra.Command{
+		Use:   "results",
+		Short: "Get data about test results",
+		Run:   getResults,
 	}
 	getRolesCmd = &cobra.Command{
 		Use:   "roles",
@@ -182,6 +188,50 @@ func getApprovals(cmd *cobra.Command, args []string) {
 		response.Body.Close()
 		if err != nil {
 			fmt.Printf("system %d: %v\n", system.ID, err)
+			continue
+		}
+	}
+}
+
+func getResults(cmd *cobra.Command, args []string) {
+	var (
+		endpoint string
+		err      error
+		params   url.Values
+		profile  models.ConfigProfile
+		profiles []models.ConfigProfile
+		response *http.Response
+	)
+
+	profiles, err = filterProfiles(config, activeProfileName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for _, profile = range profiles {
+		endpoint = fmt.Sprintf("%s/api/test-results", config.URL)
+		params = url.Values{}
+		if len(controlIDs) != 0 {
+			params.Set("controlAcronyms", strings.Join(controlIDs, ","))
+		}
+		if len(assessmentProcedures) != 0 {
+			params.Set("assessmentProcedures", strings.Join(assessmentProcedures, ","))
+		}
+		if len(params) > 0 {
+			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
+		}
+
+		response, err = emass.Get(profile, endpoint)
+		if err != nil {
+			fmt.Printf("profile %s: %v\n", profile.Name, err)
+			continue
+		}
+
+		err = output.Response(response, outputFormat)
+		response.Body.Close()
+		if err != nil {
+			fmt.Printf("profile %s: %v\n", profile.Name, err)
 			continue
 		}
 	}
@@ -337,7 +387,11 @@ func getWorkflows(cmd *cobra.Command, args []string) {
 
 func init() {
 	// Define parameters for the "emu get controls" command.
-	getControlsCmd.PersistentFlags().StringSliceVarP(&controlIDs, "control-id", "", []string{}, "Control IDs")
+	getControlsCmd.PersistentFlags().StringSliceVarP(&controlIDs, "control-ids", "", []string{}, "Control IDs")
+
+	// Define parameters for the "emu get results" command.
+	getResultsCmd.PersistentFlags().StringSliceVarP(&controlIDs, "control-ids", "", []string{}, "Control IDs")
+	getResultsCmd.PersistentFlags().StringSliceVarP(&assessmentProcedures, "assessment-procedures", "", []string{}, "Assessment procedures")
 
 	// Define parameters for the "emu get roles" command.
 	getRolesCmd.Flags().StringVarP(&roleCategory, "category", "", "", "PAC, CAC, or Other")
@@ -348,6 +402,7 @@ func init() {
 	getCmd.AddCommand(getApprovalsCmd)
 	getCmd.AddCommand(getArtifactsCmd)
 	getCmd.AddCommand(getControlsCmd)
+	getCmd.AddCommand(getResultsCmd)
 	getCmd.AddCommand(getRolesCmd)
 	getCmd.AddCommand(getSystemsCmd)
 	getCmd.AddCommand(getWorkflowsCmd)
