@@ -23,13 +23,11 @@ package cmd
 
 import (
 	"fmt"
-	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
-	"github.com/deathlabs/emu/output"
 	"github.com/spf13/cobra"
 )
 
@@ -43,170 +41,141 @@ var (
 	getControlsCmd = &cobra.Command{
 		Use:   "controls",
 		Short: "Get data about controls",
-		Run:   getControls,
+		RunE:  getControls,
 	}
 	getApprovalsCmd = &cobra.Command{
 		Use:   "approvals",
 		Short: "Get data about approvals",
-		Run:   getApprovals,
+		RunE:  getApprovals,
 	}
 	getArtifactsCmd = &cobra.Command{
 		Use:   "artifacts",
 		Short: "Get data about artifacts",
-		Run:   getArtifacts,
+		RunE:  getArtifacts,
 	}
 	getResultsCmd = &cobra.Command{
 		Use:   "results",
 		Short: "Get data about test results",
-		Run:   getResults,
+		RunE:  getResults,
 	}
 	getRolesCmd = &cobra.Command{
 		Use:   "roles",
 		Short: "Get data about roles",
-		Run:   getRoles,
+		RunE:  getRoles,
 	}
 	getSystemsCmd = &cobra.Command{
 		Use:   "systems",
 		Short: "Get data about systems",
-		Run:   getSystems,
+		RunE:  getSystems,
 	}
 	getWorkflowsCmd = &cobra.Command{
 		Use:   "workflows",
 		Short: "Get data about workflows",
-		Run:   getWorkflows,
+		RunE:  getWorkflows,
 	}
 	role         string
 	roleCategory string
 	policy       string
 )
 
-func getArtifacts(cmd *cobra.Command, args []string) {
+func getArtifacts(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
-		response *http.Response
+		label    string
 		system   models.System
 		systems  []models.System
-		profile  models.ConfigProfile
 	)
 
 	systems, err = filterSystems(config, activeProfileName, systemIDs)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	for _, system = range systems {
-		profile = system.ConfigProfile
 		endpoint = fmt.Sprintf("%s/api/systems/%d/artifacts", config.URL, system.ID)
-
-		response, err = emass.Get(profile, endpoint)
+		label = fmt.Sprintf("system %d", system.ID)
+		err = emass.FetchAndPrint(system.ConfigProfile, endpoint, label, outputFormat)
 		if err != nil {
-			fmt.Printf("system %d: %v\n", system.ID, err)
-			continue
-		}
-
-		err = output.Response(response, outputFormat)
-		response.Body.Close()
-		if err != nil {
-			fmt.Printf("system %d: %v\n", system.ID, err)
-			continue
+			return err
 		}
 	}
+
+	return nil
 }
 
-func getControls(cmd *cobra.Command, args []string) {
+func getControls(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
-		response *http.Response
+		label    string
+		params   url.Values
 		system   models.System
 		systems  []models.System
-		profile  models.ConfigProfile
 	)
 
 	systems, err = filterSystems(config, activeProfileName, systemIDs)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	for _, system = range systems {
-		profile = system.ConfigProfile
-
 		endpoint = fmt.Sprintf("%s/api/systems/%d/controls", config.URL, system.ID)
-
-		controlAcronyms := strings.Join(controlIDs, ",")
-		params := url.Values{}
-		params.Set("acronyms", controlAcronyms)
+		params = url.Values{}
+		params.Set("acronyms", strings.Join(controlIDs, ","))
 		if len(params) > 0 {
 			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
 		}
 
-		response, err = emass.Get(profile, endpoint)
+		label = fmt.Sprintf("system %d", system.ID)
+		err = emass.FetchAndPrint(system.ConfigProfile, endpoint, label, outputFormat)
 		if err != nil {
-			fmt.Printf("system %d: %v\n", system.ID, err)
-			continue
-		}
-
-		err = output.Response(response, outputFormat)
-		response.Body.Close()
-		if err != nil {
-			fmt.Printf("system %d: %v\n", system.ID, err)
-			continue
+			return err
 		}
 	}
+
+	return nil
 }
 
-func getApprovals(cmd *cobra.Command, args []string) {
+func getApprovals(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
-		response *http.Response
+		label    string
 		system   models.System
 		systems  []models.System
-		profile  models.ConfigProfile
 	)
 
 	systems, err = filterSystems(config, activeProfileName, systemIDs)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	for _, system = range systems {
-		profile = system.ConfigProfile
 		endpoint = fmt.Sprintf("%s/api/systems/%d/approval/cac", config.URL, system.ID)
-
-		response, err = emass.Get(profile, endpoint)
+		label = fmt.Sprintf("system %d", system.ID)
+		err = emass.FetchAndPrint(system.ConfigProfile, endpoint, label, outputFormat)
 		if err != nil {
-			fmt.Printf("system %d: %v\n", system.ID, err)
-			continue
-		}
-
-		err = output.Response(response, outputFormat)
-		response.Body.Close()
-		if err != nil {
-			fmt.Printf("system %d: %v\n", system.ID, err)
-			continue
+			return err
 		}
 	}
+
+	return nil
 }
 
-func getResults(cmd *cobra.Command, args []string) {
+func getResults(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
+		label    string
 		params   url.Values
 		profile  models.ConfigProfile
 		profiles []models.ConfigProfile
-		response *http.Response
 	)
 
 	profiles, err = filterProfiles(config, activeProfileName)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	for _, profile = range profiles {
@@ -222,44 +191,38 @@ func getResults(cmd *cobra.Command, args []string) {
 			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
 		}
 
-		response, err = emass.Get(profile, endpoint)
+		label = fmt.Sprintf("profile %s", profile.Name)
+		err = emass.FetchAndPrint(profile, endpoint, label, outputFormat)
 		if err != nil {
-			fmt.Printf("profile %s: %v\n", profile.Name, err)
-			continue
-		}
-
-		err = output.Response(response, outputFormat)
-		response.Body.Close()
-		if err != nil {
-			fmt.Printf("profile %s: %v\n", profile.Name, err)
-			continue
+			return err
 		}
 	}
+
+	return nil
 }
 
-func getRoles(cmd *cobra.Command, args []string) {
+func getRoles(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
+		label    string
 		params   url.Values
 		profile  models.ConfigProfile
 		profiles []models.ConfigProfile
-		response *http.Response
 	)
 
 	profiles, err = filterProfiles(config, activeProfileName)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	for _, profile = range profiles {
 		endpoint = fmt.Sprintf("%s/api/system-roles", config.URL)
+		label = fmt.Sprintf("profile %s", profile.Name)
 
 		if roleCategory != "" {
 			if role == "" {
-				fmt.Printf("profile %s: %v\n", profile.Name, "a category and role are required")
-				continue
+				return fmt.Errorf("profile %s: a category and role are required", profile.Name)
 			}
 			endpoint = fmt.Sprintf("%s/%s", endpoint, roleCategory)
 			params = url.Values{}
@@ -272,133 +235,96 @@ func getRoles(cmd *cobra.Command, args []string) {
 			}
 		}
 
-		response, err = emass.Get(profile, endpoint)
+		label = fmt.Sprintf("profile %s", profile.Name)
+		err = emass.FetchAndPrint(profile, endpoint, label, outputFormat)
 		if err != nil {
-			fmt.Printf("profile %s: %v\n", profile.Name, err)
-			continue
-		}
-
-		err = output.Response(response, outputFormat)
-		response.Body.Close()
-		if err != nil {
-			fmt.Printf("profile %s: %v\n", profile.Name, err)
-			continue
+			return err
 		}
 	}
+
+	return nil
 }
 
-func getSystems(cmd *cobra.Command, args []string) {
+func getSystems(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
+		label    string
 		profile  models.ConfigProfile
 		profiles []models.ConfigProfile
-		response *http.Response
 		system   models.System
 		systems  []models.System
 	)
 
-	// Filter by system if specific systems are requested.
 	if len(systemIDs) != 0 {
 		systems, err = filterSystems(config, activeProfileName, systemIDs)
 		if err != nil {
-			fmt.Println(err)
-			return
+			return err
 		}
 
 		for _, system = range systems {
-			profile = system.ConfigProfile
 			endpoint = fmt.Sprintf("%s/api/systems/%d", config.URL, system.ID)
-
-			response, err = emass.Get(profile, endpoint)
+			label = fmt.Sprintf("system %d", system.ID)
+			err = emass.FetchAndPrint(system.ConfigProfile, endpoint, label, outputFormat)
 			if err != nil {
-				fmt.Printf("system %d: %v\n", system.ID, err)
-				continue
-			}
-
-			err = output.Response(response, outputFormat)
-			response.Body.Close()
-			if err != nil {
-				fmt.Printf("system %d: %v\n", system.ID, err)
-				continue
+				return err
 			}
 		}
 	} else {
-		// Filter by profile if no specific systems are requested.
 		profiles, err = filterProfiles(config, activeProfileName)
 		if err != nil {
-			fmt.Println(err)
-			return
+			return err
 		}
 
 		for _, profile = range profiles {
 			endpoint = fmt.Sprintf("%s/api/systems", config.URL)
-
-			response, err = emass.Get(profile, endpoint)
+			label = fmt.Sprintf("profile %s", profile.Name)
+			err = emass.FetchAndPrint(profile, endpoint, label, outputFormat)
 			if err != nil {
-				fmt.Printf("profile %s: %v\n", profile.Name, err)
-				continue
-			}
-
-			err = output.Response(response, outputFormat)
-			response.Body.Close()
-			if err != nil {
-				fmt.Printf("profile %s: %v\n", profile.Name, err)
-				continue
+				return err
 			}
 		}
 	}
+
+	return nil
 }
 
-func getWorkflows(cmd *cobra.Command, args []string) {
+func getWorkflows(cmd *cobra.Command, args []string) error {
 	var (
+		endpoint string
 		err      error
-		response *http.Response
+		label    string
 		system   models.System
 		systems  []models.System
-		profile  models.ConfigProfile
-		endpoint string
 	)
 
 	systems, err = filterSystems(config, activeProfileName, systemIDs)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	for _, system = range systems {
-		profile = system.ConfigProfile
 		endpoint = fmt.Sprintf("%s/api/systems/%d/approval/pac", config.URL, system.ID)
-
-		response, err = emass.Get(profile, endpoint)
+		label = fmt.Sprintf("system %d", system.ID)
+		err = emass.FetchAndPrint(system.ConfigProfile, endpoint, label, outputFormat)
 		if err != nil {
-			fmt.Printf("system %d: %v\n", system.ID, err)
-			continue
-		}
-
-		err = output.Response(response, outputFormat)
-		response.Body.Close()
-		if err != nil {
-			fmt.Printf("system %d: %v\n", system.ID, err)
-			continue
+			return err
 		}
 	}
+
+	return nil
 }
 
 func init() {
-	// Define parameters for the "emu get controls" command.
 	getControlsCmd.PersistentFlags().StringSliceVarP(&controlIDs, "control-ids", "", []string{}, "Control IDs")
 
-	// Define parameters for the "emu get results" command.
 	getResultsCmd.PersistentFlags().StringSliceVarP(&controlIDs, "control-ids", "", []string{}, "Control IDs")
 	getResultsCmd.PersistentFlags().StringSliceVarP(&assessmentProcedures, "assessment-procedures", "", []string{}, "Assessment procedures")
 
-	// Define parameters for the "emu get roles" command.
 	getRolesCmd.Flags().StringVarP(&roleCategory, "category", "", "", "PAC, CAC, or Other")
 	getRolesCmd.Flags().StringVarP(&role, "role", "", "", "ISO, ISSM, SCA, Auditor, AO, etc. (required if --category is used)")
 	getRolesCmd.Flags().StringVarP(&policy, "policy", "", "", "RMF, DIACAP, or Reporting")
 
-	// Attach commands to the "emu get" command
 	getCmd.AddCommand(getApprovalsCmd)
 	getCmd.AddCommand(getArtifactsCmd)
 	getCmd.AddCommand(getControlsCmd)
@@ -407,6 +333,5 @@ func init() {
 	getCmd.AddCommand(getSystemsCmd)
 	getCmd.AddCommand(getWorkflowsCmd)
 
-	// Attach the "emu get" command to the "emu" command.
 	rootCmd.AddCommand(getCmd)
 }

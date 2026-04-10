@@ -26,6 +26,7 @@ import (
 	"net/http"
 
 	"github.com/deathlabs/emu/models"
+	"github.com/deathlabs/emu/output"
 )
 
 func Get(profile models.ConfigProfile, url string) (*http.Response, error) {
@@ -55,6 +56,24 @@ func Get(profile models.ConfigProfile, url string) (*http.Response, error) {
 		return nil, err
 	}
 
-	fmt.Println(response)
+	if response.StatusCode < 200 || response.StatusCode >= 300 {
+		return nil, fmt.Errorf("received non-success status code: %d", response.StatusCode)
+	}
+
 	return response, nil
+}
+
+func FetchAndPrint(profile models.ConfigProfile, endpoint string, label string, outputFormat string) error {
+	var (
+		err      error
+		response *http.Response
+	)
+
+	response, err = Get(profile, endpoint)
+	if err != nil {
+		return fmt.Errorf("%s: %w", label, err)
+	}
+	defer response.Body.Close()
+
+	return output.Response(response, outputFormat)
 }
