@@ -32,14 +32,18 @@ import (
 )
 
 var (
-	getApprovalsCmd = &cobra.Command{
-		Use:   "approvals",
-		Short: "Get data about approvals",
-		RunE:  getApprovals,
+	controlApprovalsControlAcronyms []string
+)
+
+var (
+	getControlApprovalsCmd = &cobra.Command{
+		Use:   "control-approvals",
+		Short: "Get data about control approvals in the Control Approval Chain (CAC)",
+		RunE:  getControlApprovals,
 	}
 )
 
-func getApprovals(cmd *cobra.Command, args []string) error {
+func getControlApprovals(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
@@ -47,6 +51,7 @@ func getApprovals(cmd *cobra.Command, args []string) error {
 		system   models.System
 		systems  []models.System
 	)
+	// TODO: add params
 
 	// Filter systems based on system IDs provided via the root-level --system-ids flag.
 	// If no system IDs are provided, this will return all systems for the active profile.
@@ -76,6 +81,9 @@ func getApprovals(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Add the "emu get approvals" subcommand to the "emu get" command.
-	getCmd.AddCommand(getApprovalsCmd)
+	// Define flags for the "emu get control-approvals" subcommand.
+	getControlApprovalsCmd.PersistentFlags().StringSliceVarP(&controlApprovalsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
+
+	// Add the "emu get control-approvals" subcommand to the "emu get" command.
+	getCmd.AddCommand(getControlApprovalsCmd)
 }

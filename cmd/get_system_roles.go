@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
@@ -34,14 +33,20 @@ import (
 )
 
 var (
-	getResultsCmd = &cobra.Command{
-		Use:   "results",
-		Short: "Get data about test results",
-		RunE:  getResults,
+	rolesCategory string
+	rolesRole     string
+	rolesPolicy   string
+)
+
+var (
+	getSystemRolesCmd = &cobra.Command{
+		Use:   "system-roles",
+		Short: "Get data about system roles",
+		RunE:  getSystemRoles,
 	}
 )
 
-func getResults(cmd *cobra.Command, args []string) error {
+func getSystemRoles(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
@@ -57,33 +62,36 @@ func getResults(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// Loop through the filtered profiles and get test results data for each one.
+	// Loop through the filtered profiles and get system role data for each one.
 	for _, profile = range profiles {
-		// Define the endpoint for getting test results data for the current profile.
-		endpoint = fmt.Sprintf("%s/api/test-results", config.URL)
+		// Define the endpoint for getting system roles data for the current profile.
+		endpoint = fmt.Sprintf("%s/api/system-roles", config.URL)
 
-		// If control IDs or assessment procedures are specified via the --control-ids
-		// and --assessment-procedures flags, add them as query parameters.
-		params = url.Values{}
+		// If a role category is specified via the --category flag,
+		// add it to the endpoint and set the required parameter.
+		if rolesCategory != "" {
+			// Return an error if a role argument is not provided.
+			if rolesRole == "" {
+				return fmt.Errorf("profile %s: a category and role are required", profile.Name)
+			}
 
-		// If control IDs are specified via the --control-ids flag,
-		// add them as a query parameter.
-		if len(controlIDs) != 0 {
-			params.Set("controlAcronyms", strings.Join(controlIDs, ","))
+			// Add the role category to the endpoint.
+			endpoint = fmt.Sprintf("%s/%s", endpoint, rolesCategory)
+
+			// Set the required role parameter and optional policy parameter.
+			params = url.Values{}
+			params.Set("role", rolesRole)
+			if rolesPolicy != "" {
+				params.Set("policy", rolesPolicy)
+			}
+
+			// If query parameters are set, add them to the endpoint.
+			if len(params) > 0 {
+				endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
+			}
 		}
 
-		// If assessment procedures are specified via the --assessment-procedures flag,
-		// add them as a query parameter.
-		if len(assessmentProcedures) != 0 {
-			params.Set("assessmentProcedures", strings.Join(assessmentProcedures, ","))
-		}
-
-		// If query parameters are set, add them to the endpoint.
-		if len(params) > 0 {
-			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
-		}
-
-		// Make the request for test results data.
+		// Make the request for system roles data.
 		response, err = emass.Get(profile, endpoint)
 		if err != nil {
 			return err
@@ -100,10 +108,11 @@ func getResults(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Define flags for the "emu get results" subcommand.
-	getResultsCmd.PersistentFlags().StringSliceVarP(&controlIDs, "control-ids", "", []string{}, "Control IDs")
-	getResultsCmd.PersistentFlags().StringSliceVarP(&assessmentProcedures, "assessment-procedures", "", []string{}, "Assessment procedures")
+	// Define flags for the "emu get roles" subcommand.
+	getSystemRolesCmd.Flags().StringVarP(&rolesCategory, "category", "", "", "PAC, CAC, or Other")
+	getSystemRolesCmd.Flags().StringVarP(&rolesRole, "role", "", "", "ISO, ISSM, SCA, Auditor, AO, etc. (required if --category is used)")
+	getSystemRolesCmd.Flags().StringVarP(&rolesPolicy, "policy", "", "", "RMF, DIACAP, or Reporting")
 
-	// Add the "emu get results" subcommand to the "emu get" command.
-	getCmd.AddCommand(getResultsCmd)
+	// Add the "emu get roles" subcommand to the "emu get" command.
+	getCmd.AddCommand(getSystemRolesCmd)
 }

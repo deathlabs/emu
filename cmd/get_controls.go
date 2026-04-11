@@ -34,6 +34,10 @@ import (
 )
 
 var (
+	controlsControlAcronyms []string
+)
+
+var (
 	getControlsCmd = &cobra.Command{
 		Use:   "controls",
 		Short: "Get data about controls",
@@ -67,7 +71,7 @@ func getControls(cmd *cobra.Command, args []string) error {
 		params = url.Values{}
 
 		// If control IDs are specified via the --control-ids flag, add them as a query parameter.
-		params.Set("acronyms", strings.Join(controlIDs, ","))
+		params.Set("acronyms", strings.Join(controlsControlAcronyms, ","))
 		if len(params) > 0 {
 			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
 		}
@@ -90,7 +94,7 @@ func getControls(cmd *cobra.Command, args []string) error {
 
 func init() {
 	// Define flags for the "emu get controls" subcommand.
-	getControlsCmd.PersistentFlags().StringSliceVarP(&controlIDs, "control-ids", "", []string{}, "Control IDs")
+	getControlsCmd.PersistentFlags().StringSliceVarP(&controlsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
 
 	// Add the "emu get controls" subcommand to the "emu get" command.
 	getCmd.AddCommand(getControlsCmd)

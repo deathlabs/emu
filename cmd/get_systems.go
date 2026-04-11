@@ -32,6 +32,16 @@ import (
 )
 
 var (
+	systemsCoamsID               string
+	systemsDitprID               string
+	systemsIncludeDecommissioned bool
+	systemsIncludeDitprMetrics   bool
+	systemsPolicy                string
+	systemsRegistrationType      string
+	systemsReportsForScorecard   bool
+)
+
+var (
 	getSystemsCmd = &cobra.Command{
 		Use:   "systems",
 		Short: "Get data about systems",
@@ -49,6 +59,7 @@ func getSystems(cmd *cobra.Command, args []string) error {
 		system   models.System
 		systems  []models.System
 	)
+	// TODO: add params
 
 	// If system IDs are provided via the root-level --system-ids flag, use them to filter systems.
 	// Otherwise, filter profiles based on the active profile name and get all systems for those profiles.
@@ -106,6 +117,15 @@ func getSystems(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
+	// Define flags for the "emu get systems" subcommand.
+	getSystemsCmd.PersistentFlags().StringVarP(&systemsCoamsID, "coams-id", "", "", "COAMS ID")
+	getSystemsCmd.PersistentFlags().StringVarP(&systemsDitprID, "ditpr-id", "", "", "DITPR ID")
+	getSystemsCmd.PersistentFlags().BoolVarP(&systemsIncludeDecommissioned, "include-decommissioned", "", false, "Include decommissioned systems")
+	getSystemsCmd.PersistentFlags().StringVarP(&systemsPolicy, "policy", "", "", "Policy (DIACAP, RMF, or Reporting)")
+	getSystemsCmd.PersistentFlags().BoolVarP(&systemsIncludeDitprMetrics, "include-ditpr-metrics", "", false, "Include DITPR metrics (cannot be used in conjunction with --coams-id or --ditpr-id)")
+	getSystemsCmd.PersistentFlags().StringVarP(&systemsRegistrationType, "registration-type", "", "", "Registration type (assessAndAuthorize, assessOnly, guest, regular, functional, cloudServiceProvider, commonControlProvider, authorizationToUse, reciprocityAcceptance)")
+	getSystemsCmd.PersistentFlags().BoolVarP(&systemsReportsForScorecard, "reports-for-scorecard", "", false, "Return only systems that report to the DOD Cyber Hygiene Scorecard")
+
 	// Add the "emu get systems" subcommand to the "emu get" command.
 	getCmd.AddCommand(getSystemsCmd)
 }

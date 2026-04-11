@@ -34,7 +34,7 @@ import (
 var (
 	getWorkflowsCmd = &cobra.Command{
 		Use:   "workflows",
-		Short: "Get data about workflows",
+		Short: "Get data about workflows in the Package Approval Chain (PAC)",
 		RunE:  getWorkflows,
 	}
 )

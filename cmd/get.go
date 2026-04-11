@@ -26,17 +26,9 @@ import (
 )
 
 var (
-	assessmentProcedures []string
-	controlIDs           []string
-	role                 string
-	roleCategory         string
-	policy               string
-)
-
-var (
 	getCmd = &cobra.Command{
 		Use:   "get",
-		Short: "Get data about systems, controls, approvals, artifacts, roles, and workflows",
+		Short: "Get data",
 	}
 )
 

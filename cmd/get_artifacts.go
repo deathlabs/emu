@@ -32,6 +32,14 @@ import (
 )
 
 var (
+	artifactsFilename             string
+	artifactsControlAcronyms      []string
+	artifactsAssessmentProcedures []string
+	artifactsCcis                 []string
+	artifactsSystemOnly           bool
+)
+
+var (
 	getArtifactsCmd = &cobra.Command{
 		Use:   "artifacts",
 		Short: "Get data about artifacts",
@@ -47,6 +55,7 @@ func getArtifacts(cmd *cobra.Command, args []string) error {
 		system   models.System
 		systems  []models.System
 	)
+	// TODO: add params
 
 	// Filter systems based on system IDs provided via the root-level --system-ids flag.
 	// If no system IDs are provided, this will return all systems for the active profile.
@@ -76,6 +85,13 @@ func getArtifacts(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
+	// Define flags for the "emu get artifacts" subcommand.
+	getArtifactsCmd.PersistentFlags().StringVarP(&artifactsFilename, "filename", "f", "", "Filename")
+	getArtifactsCmd.PersistentFlags().StringSliceVarP(&artifactsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
+	getArtifactsCmd.PersistentFlags().StringSliceVarP(&artifactsAssessmentProcedures, "assessment-procedures", "", []string{}, "Assessment procedures")
+	getArtifactsCmd.PersistentFlags().StringSliceVarP(&artifactsCcis, "ccis", "", []string{}, "CCIs")
+	getArtifactsCmd.PersistentFlags().BoolVarP(&artifactsSystemOnly, "system-only", "", false, "Exclude control and AP-level artifacts only")
+
 	// Add the "emu get artifacts" subcommand to the "emu get" command.
 	getCmd.AddCommand(getArtifactsCmd)
 }
