@@ -87,7 +87,7 @@ func getTransport(publicKeyPath string, privateKeyPath string) (*http.Transport,
 	return transport, nil
 }
 
-func GetClient(profile models.ConfigProfile) (*http.Client, error) {
+func getHTTPClient(profile models.ConfigProfile) (*http.Client, error) {
 	var (
 		client    *http.Client
 		err       error

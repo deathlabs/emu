@@ -22,14 +22,13 @@ THE SOFTWARE.
 package emass
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/deathlabs/emu/models"
-	"github.com/deathlabs/emu/output"
 )
 
-func Get(profile models.ConfigProfile, url string) (*http.Response, error) {
+// Get sends an HTTP GET request using the endpoint and profile specified and returns the HTTP response.
+func Get(profile models.ConfigProfile, endpoint string) (*http.Response, error) {
 	var (
 		client   *http.Client
 		err      error
@@ -37,43 +36,29 @@ func Get(profile models.ConfigProfile, url string) (*http.Response, error) {
 		response *http.Response
 	)
 
-	client, err = GetClient(profile)
+	// Get an HTTPS client for the specified profile.
+	client, err = getHTTPClient(profile)
 	if err != nil {
 		return nil, err
 	}
 
-	request, err = http.NewRequest(http.MethodGet, url, nil)
+	// Create an HTTP request for the specified endpoint.
+	request, err = http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
 
+	// Set the headers required for the HTTP request.
+	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("api-key", profile.APIKey)
 	request.Header.Set("user-uid", profile.UserUID)
-	request.Header.Set("Content-Type", "application/json")
 
+	// Send the HTTP request.
 	response, err = client.Do(request)
 	if err != nil {
 		return nil, err
 	}
 
-	if response.StatusCode < 200 || response.StatusCode >= 300 {
-		return nil, fmt.Errorf("received non-success status code: %d", response.StatusCode)
-	}
-
+	// Return the HTTP response.
 	return response, nil
-}
-
-func FetchAndPrint(profile models.ConfigProfile, endpoint string, label string, outputFormat string) error {
-	var (
-		err      error
-		response *http.Response
-	)
-
-	response, err = Get(profile, endpoint)
-	if err != nil {
-		return fmt.Errorf("%s: %w", label, err)
-	}
-	defer response.Body.Close()
-
-	return output.Response(response, outputFormat)
 }

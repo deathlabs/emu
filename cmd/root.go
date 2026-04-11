@@ -98,10 +98,12 @@ func filterProfiles(config models.Config, activeProfileName string) ([]models.Co
 		profiles []models.ConfigProfile
 	)
 
+	// If no active profile name is provided, return all profiles.
 	if activeProfileName == "" {
 		return config.ConfigProfiles, nil
 	}
 
+	// Loop through profiles in the config and filter based on the active profile name.
 	for _, profile = range config.ConfigProfiles {
 		if profile.Name == activeProfileName {
 			profiles = append(profiles, profile)
@@ -118,28 +120,35 @@ func filterSystems(config models.Config, profileName string, systemIDs []int) ([
 		system          models.System
 	)
 
+	// Loop through systems in the config and filter based on profile name and system IDs.
 	for _, system = range config.Systems {
+		// If a profile name is provided and the system's profile does not match, skip this system.
 		if profileName != "" && system.ConfigProfile.Name != profileName {
 			continue
 		}
 
+		// If system IDs are provided and the system's ID is not in the list, skip this system.
 		if len(systemIDs) > 0 && !containsSystemID(systemIDs, system.ID) {
 			continue
 		}
 
+		// Add the system to the list of filtered systems.
 		filteredSystems = append(filteredSystems, system)
 	}
 
+	// If no systems matched the filters, return an error.
 	if len(filteredSystems) == 0 {
 		return nil, fmt.Errorf("no systems matched the requested filters")
 	}
 
+	// Return the systems filtered based on the provided criteria.
 	return filteredSystems, nil
 }
 
 func containsSystemID(ids []int, id int) bool {
 	var current int
 
+	// Loop through the list of system IDs and check if the provided ID is in the list.
 	for _, current = range ids {
 		if current == id {
 			return true
@@ -156,7 +165,7 @@ func Execute() {
 }
 
 func init() {
-	// Register flags.
+	// Define persistent flags for the root command.
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", DefaultConfigFilePath, "Config file path")
 	rootCmd.PersistentFlags().StringVarP(&activeProfileName, "profile", "p", "", "Config profile name")
 	rootCmd.PersistentFlags().IntSliceVarP(&systemIDs, "system-id", "s", []int{}, "System IDs (can specify multiple)")
