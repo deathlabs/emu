@@ -1,5 +1,5 @@
 # To-Do
-- [ ] Add params to artifacts
-- [ ] Add params to control approvals
-- [ ] Add params to systems
-- [ ] Add params to test results
+- [x] Add params to artifacts
+- [x] Add params to control approvals
+- [x] Add params to systems
+- [x] Add params to test results

@@ -24,6 +24,8 @@ package cmd
 import (
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
@@ -47,11 +49,17 @@ func getControlApprovals(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
+		params   url.Values
 		response *http.Response
 		system   models.System
 		systems  []models.System
 	)
-	// TODO: add params
+
+	params = url.Values{}
+
+	if len(controlApprovalsControlAcronyms) > 0 {
+		params.Set("controlAcronyms", strings.Join(controlApprovalsControlAcronyms, ","))
+	}
 
 	// Filter systems based on system IDs provided via the root-level --system-ids flag.
 	// If no system IDs are provided, this will return all systems for the active profile.
@@ -64,6 +72,10 @@ func getControlApprovals(cmd *cobra.Command, args []string) error {
 	for _, system = range systems {
 		// Define the endpoint for getting approvals data for the current system.
 		endpoint = fmt.Sprintf("%s/api/systems/%d/approvals/cac", config.URL, system.ID)
+
+		if len(params) > 0 {
+			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
+		}
 
 		response, err = emass.Get(system.ConfigProfile, endpoint)
 		if err != nil {

@@ -52,12 +52,11 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
-		response *http.Response
 		params   url.Values
 		profile  models.ConfigProfile
 		profiles []models.ConfigProfile
+		response *http.Response
 	)
-	// TODO: finish adding all params
 
 	// Filter profiles based on the profile name provided via the root-level --profile flag.
 	profiles, err = filterProfiles(config, activeProfileName)
@@ -74,16 +73,24 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 		// and --assessment-procedures flags, add them as query parameters.
 		params = url.Values{}
 
+		// If assessment procedures are specified via the --assessment-procedures flag,
+		// add them as a query parameter.
+		if len(resultsAssessmentProcedures) != 0 {
+			params.Set("assessmentProcedures", strings.Join(resultsAssessmentProcedures, ","))
+		}
+
+		if len(resultsCcis) != 0 {
+			params.Set("ccis", strings.Join(resultsCcis, ","))
+		}
+
 		// If control IDs are specified via the --control-ids flag,
 		// add them as a query parameter.
 		if len(resultsControlAcronyms) != 0 {
 			params.Set("acronyms", strings.Join(resultsControlAcronyms, ","))
 		}
 
-		// If assessment procedures are specified via the --assessment-procedures flag,
-		// add them as a query parameter.
-		if len(resultsAssessmentProcedures) != 0 {
-			params.Set("assessmentProcedures", strings.Join(resultsAssessmentProcedures, ","))
+		if resultsLatestOnly {
+			params.Set("latestOnly", "true")
 		}
 
 		// If query parameters are set, add them to the endpoint.

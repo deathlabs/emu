@@ -24,6 +24,7 @@ package cmd
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
@@ -53,13 +54,43 @@ func getSystems(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
+		params   url.Values
 		response *http.Response
 		profile  models.ConfigProfile
 		profiles []models.ConfigProfile
 		system   models.System
 		systems  []models.System
 	)
-	// TODO: add params
+
+	params = url.Values{}
+
+	if systemsCoamsID != "" {
+		params.Set("coamsId", systemsCoamsID)
+	}
+
+	if systemsDitprID != "" {
+		params.Set("ditprId", systemsDitprID)
+	}
+
+	if systemsIncludeDecommissioned {
+		params.Set("includeDecommissioned", "true")
+	}
+
+	if systemsIncludeDitprMetrics {
+		params.Set("includeDitprMetrics", "true")
+	}
+
+	if systemsPolicy != "" {
+		params.Set("policy", systemsPolicy)
+	}
+
+	if systemsRegistrationType != "" {
+		params.Set("registrationType", systemsRegistrationType)
+	}
+
+	if systemsReportsForScorecard {
+		params.Set("reportsForScorecard", "true")
+	}
 
 	// If system IDs are provided via the root-level --system-ids flag, use them to filter systems.
 	// Otherwise, filter profiles based on the active profile name and get all systems for those profiles.
@@ -74,6 +105,10 @@ func getSystems(cmd *cobra.Command, args []string) error {
 		for _, system = range systems {
 			// Define the endpoint for getting systems data for the current system.
 			endpoint = fmt.Sprintf("%s/api/systems/%d", config.URL, system.ID)
+
+			if len(params) > 0 {
+				endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
+			}
 
 			// Make the request for systems data.
 			response, err = emass.Get(system.ConfigProfile, endpoint)
@@ -98,6 +133,10 @@ func getSystems(cmd *cobra.Command, args []string) error {
 		for _, profile = range profiles {
 			// Define the endpoint for getting systems data for the current profile.
 			endpoint = fmt.Sprintf("%s/api/systems", config.URL)
+
+			if len(params) > 0 {
+				endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
+			}
 
 			// Make the request for systems data.
 			response, err = emass.Get(profile, endpoint)
