@@ -19,23 +19,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package output
+package config
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/deathlabs/emu/models"
 )
 
-func Config(config models.Config, format string) error {
-	switch strings.ToLower(format) {
-	case "json":
-		ToJSON(config)
-	case "yaml":
-		ToYAML(config)
-	default:
-		return fmt.Errorf("unsupported output format: %s", format)
-	}
-	return nil
-}
+var (
+	ActiveProfileName     string
+	Data                  models.Config
+	DefaultConfigFilePath string = ".emu.yaml"
+	DefaultOutputFormat   string = "json"
+	Filename              string
+	OutputFormat          string
+	SystemIDs             []int
+)

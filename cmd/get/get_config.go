@@ -19,30 +19,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package get
 
 import (
-	"fmt"
-
+	"github.com/deathlabs/emu/config"
+	"github.com/deathlabs/emu/output"
 	"github.com/spf13/cobra"
 )
 
 var (
-	updateCmd = &cobra.Command{
-		Use:   "update",
-		Short: "Update evidence in eMASS",
+	getConfigCmd = &cobra.Command{
+		Use:   "config",
+		Short: "Print EMU configuration information",
+		RunE:  outputConfig,
 	}
 )
 
-func updateArtifact(cmd *cobra.Command, args []string) {
-	fmt.Println("emu update artifact")
-}
+func outputConfig(cmd *cobra.Command, args []string) error {
+	var err error
 
-func init() {
-	updateCmd.AddCommand(&cobra.Command{
-		Use:   "artifact",
-		Short: "Update an artifact to eMASS",
-		Run:   updateArtifact,
-	})
-	rootCmd.AddCommand(updateCmd)
+	err = output.Config(config.Data, config.OutputFormat)
+	if err != nil {
+		return err
+	}
+	return nil
 }

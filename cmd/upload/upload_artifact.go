@@ -19,4 +19,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package emass
+package upload
+
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
+
+var (
+	uploadArtifactCmd = &cobra.Command{
+		Use:   "artifact",
+		Short: "Upload an artifact to eMASS",
+		Run:   uploadArtifact,
+	}
+)
+
+func uploadArtifact(cmd *cobra.Command, args []string) {
+	fmt.Println("emu upload artifact")
+}

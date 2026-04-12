@@ -19,23 +19,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package output
+package upload
 
 import (
-	"fmt"
-	"strings"
-
-	"github.com/deathlabs/emu/models"
+	"github.com/spf13/cobra"
 )
 
-func Config(config models.Config, format string) error {
-	switch strings.ToLower(format) {
-	case "json":
-		ToJSON(config)
-	case "yaml":
-		ToYAML(config)
-	default:
-		return fmt.Errorf("unsupported output format: %s", format)
+var (
+	Cmd = &cobra.Command{
+		Use:   "upload",
+		Short: "Upload data",
 	}
-	return nil
+)
+
+func init() {
+	Cmd.AddCommand(uploadArtifactCmd)
+	Cmd.AddCommand(uploadSBOMCmd)
 }

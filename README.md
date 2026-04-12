@@ -2,7 +2,7 @@
 A tool for automating eMASS records management.
 
 ## Quickstart
-**Step 1.** Compile the source code and install `emu`. 
+**Step 1.** Use the provided Makefile to build and install `emu`. 
 ```bash
 make
 ```
@@ -61,7 +61,7 @@ You should get output similar to below.
     "registrationType": "Assess and Authorize",
     "securityPlanApprovalDate": 1638741660,
     "securityPlanApprovalStatus": "Approved",
-    "systemId": 5050
+    "systemId": 1984
   },
   {
     "acronym": "LGN",
@@ -72,7 +72,7 @@ You should get output similar to below.
     "registrationType": "Assess and Authorize",
     "securityPlanApprovalDate": null,
     "securityPlanApprovalStatus": "Not Yet Approved",
-    "systemId": 666
+    "systemId": 2019
   },
   {
     "acronym": "GNS",
@@ -83,7 +83,16 @@ You should get output similar to below.
     "registrationType": "Assess and Authorize",
     "securityPlanApprovalDate": 1700000000,
     "securityPlanApprovalStatus": "Approved",
-    "systemId": 1337
+    "systemId": 2015
   }
 ]
+```
+
+## Examples
+```bash
+# Text goes here.
+emu get roles --category cac --role iso
+
+# Text goes here.
+emu get control --control-id ac-1
 ```

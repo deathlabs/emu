@@ -1,0 +1,22 @@
+# To-Do
+- [x] Add params to artifacts
+- [x] Add params to control approvals
+- [x] Add params to systems
+- [x] Add params to test results
+- [ ] Add get function for POA&Ms
+- [ ] Add get function for milestones
+- [ ] Add get function for hardware baseline
+- [ ] Add get function for software baseline
+- [ ] Add get function for ports/protocols
+- [ ] Add get function for device scan results
+- [ ] Add get function for cloud resource results
+- [ ] Add get function for container scan results
+- [ ] Add get function for static code scans
+- [ ] Add get function for bill of materials
+- [ ] Add get function for workflow definitions
+- [ ] Add get function for workflow instances
+- [ ] Add get function for CMMC assessments
+- [ ] Add get function for CMCC SPRS ingest status
+- [ ] Add get function for dashboards
+- [ ] Add get function for test connection
+- [ ] Ensure output format in config file is used

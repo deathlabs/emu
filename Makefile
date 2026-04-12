@@ -12,4 +12,4 @@
 .SILENT: build
 
 build: 
-	go install -ldflags="-s -w" .
+	go install -ldflags="-s -w" . 

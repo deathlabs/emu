@@ -34,3 +34,4 @@ go.work.sum
 emu
 *.cer
 *.key
+.emu.yaml

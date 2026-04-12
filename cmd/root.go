@@ -24,114 +24,29 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
-	"github.com/deathlabs/emu/models"
+	"github.com/deathlabs/emu/cmd/create"
+	"github.com/deathlabs/emu/cmd/delete"
+	"github.com/deathlabs/emu/cmd/get"
+	"github.com/deathlabs/emu/cmd/update"
+	"github.com/deathlabs/emu/cmd/upload"
+	"github.com/deathlabs/emu/config"
+	"github.com/deathlabs/emu/emass"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 const (
-	DefaultConfigFilePath = ".emu.yaml"
-	DefaultOutputFormat   = "json"
+	emuVersion   = "v4.0.0"
+	emassVersion = "v3.31.0"
 )
 
 var (
-	activeProfileName string
-	config            models.Config
-	configFile        string
-	outputFormat      string
-	rootCmd           = &cobra.Command{
-		Use:   "emu",
-		Short: "eMASS Updater (EMU) is a tool for automating eMASS records management.",
+	rootCmd = &cobra.Command{
+		Use:     "emu",
+		Short:   "eMASS Updater (EMU) is a tool for automating eMASS records management.",
+		Version: fmt.Sprintf("%s\neMASS API version %s", emuVersion, emassVersion),
 	}
-	systemIDs []int
 )
-
-func setupEMASSClient(cmd *cobra.Command, args []string) error {
-	var err error
-
-	// Set the config filepath to the default if one is not provided.
-	if configFile != DefaultConfigFilePath {
-		viper.SetConfigType("yaml")
-		viper.SetConfigFile(configFile)
-	} else {
-		viper.SetConfigFile(filepath.Join(".", DefaultConfigFilePath))
-	}
-
-	// Copy the config into memory.
-	err = viper.ReadInConfig()
-	if err != nil {
-		return err
-	}
-
-	// Unmarshal the config into a Config struct.
-	err = viper.Unmarshal(&config)
-	if err != nil {
-		return err
-	}
-
-	// Resolve the profiles for each system in the config.
-	config.ResolveProfilesToSystems()
-
-	return nil
-}
-
-func filterProfiles(config models.Config, activeProfileName string) ([]models.ConfigProfile, error) {
-	var (
-		profile  models.ConfigProfile
-		profiles []models.ConfigProfile
-	)
-
-	if activeProfileName == "" {
-		return config.ConfigProfiles, nil
-	}
-
-	for _, profile = range config.ConfigProfiles {
-		if profile.Name == activeProfileName {
-			profiles = append(profiles, profile)
-			return profiles, nil
-		}
-	}
-
-	return nil, fmt.Errorf("no profile found for name %s", activeProfileName)
-}
-
-func filterSystems(config models.Config, profileName string, systemIDs []int) ([]models.System, error) {
-	var (
-		filteredSystems []models.System
-		system          models.System
-	)
-
-	for _, system = range config.Systems {
-		if profileName != "" && system.ConfigProfile.Name != profileName {
-			continue
-		}
-
-		if len(systemIDs) > 0 && !containsSystemID(systemIDs, system.ID) {
-			continue
-		}
-
-		filteredSystems = append(filteredSystems, system)
-	}
-
-	if len(filteredSystems) == 0 {
-		return nil, fmt.Errorf("no systems matched the requested filters")
-	}
-
-	return filteredSystems, nil
-}
-
-func containsSystemID(ids []int, id int) bool {
-	var current int
-
-	for _, current = range ids {
-		if current == id {
-			return true
-		}
-	}
-	return false
-}
 
 func Execute() {
 	var err = rootCmd.Execute()
@@ -141,12 +56,19 @@ func Execute() {
 }
 
 func init() {
-	// Register flags.
-	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", DefaultConfigFilePath, "Config filepath")
-	rootCmd.PersistentFlags().StringVarP(&activeProfileName, "profile", "p", "", "Profile name")
-	getCmd.PersistentFlags().IntSliceVarP(&systemIDs, "system-id", "s", []int{}, "eMASS System ID")
-	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", DefaultOutputFormat, "Output format (json or yaml)")
+	// Define persistent flags for the root command.
+	rootCmd.PersistentFlags().StringVarP(&config.Filename, "config", "c", config.DefaultConfigFilePath, "Config file path")
+	rootCmd.PersistentFlags().StringVarP(&config.ActiveProfileName, "profile", "p", "", "Config profile name")
+	rootCmd.PersistentFlags().IntSliceVarP(&config.SystemIDs, "system-id", "s", []int{}, "System IDs (can specify multiple)")
+	rootCmd.PersistentFlags().StringVarP(&config.OutputFormat, "output", "o", config.DefaultOutputFormat, "Output format (json or yaml)")
 
 	// Setup the eMASS client before executing the root command (i.e., any command).
-	rootCmd.PersistentPreRunE = setupEMASSClient
+	rootCmd.PersistentPreRunE = emass.SetupClient
+
+	// Add subcommands to the root command.
+	rootCmd.AddCommand(create.Cmd)
+	rootCmd.AddCommand(delete.Cmd)
+	rootCmd.AddCommand(get.Cmd)
+	rootCmd.AddCommand(update.Cmd)
+	rootCmd.AddCommand(upload.Cmd)
 }

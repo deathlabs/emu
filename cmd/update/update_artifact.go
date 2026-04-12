@@ -19,23 +19,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package output
+package update
 
 import (
 	"fmt"
-	"strings"
 
-	"github.com/deathlabs/emu/models"
+	"github.com/spf13/cobra"
 )
 
-func Config(config models.Config, format string) error {
-	switch strings.ToLower(format) {
-	case "json":
-		ToJSON(config)
-	case "yaml":
-		ToYAML(config)
-	default:
-		return fmt.Errorf("unsupported output format: %s", format)
+var (
+	updateArtifactCmd = &cobra.Command{
+		Use:   "artifact",
+		Short: "Update artifact data",
+		Run:   updateArtifact,
 	}
-	return nil
+)
+
+func updateArtifact(cmd *cobra.Command, args []string) {
+	fmt.Println("emu update artifact")
 }

@@ -19,13 +19,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package models
+package delete
 
-type RequestConfig struct {
-	Method       string            `json:"method"`
-	URL          string            `json:"url"`
-	Headers      map[string]string `json:"headers"`
-	Body         string            `json:"body,omitempty"`
-	Timeout      int               `json:"timeout"`
-	OutputFormat string            `json:"output_format"`
+import (
+	"github.com/spf13/cobra"
+)
+
+var (
+	Cmd = &cobra.Command{
+		Use:   "delete",
+		Short: "Delete data",
+	}
+)
+
+func init() {
+	Cmd.AddCommand(deleteArtifactCmd)
 }
