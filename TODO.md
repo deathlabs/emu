@@ -19,3 +19,4 @@
 - [ ] Add get function for CMCC SPRS ingest status
 - [ ] Add get function for dashboards
 - [ ] Add get function for test connection
+- [ ] Ensure output format in config file is used
