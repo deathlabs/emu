@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package get
 
 import (
 	"fmt"
@@ -27,6 +27,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/deathlabs/emu/config"
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
 	"github.com/deathlabs/emu/output"
@@ -59,7 +60,7 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 	)
 
 	// Filter profiles based on the profile name provided via the root-level --profile flag.
-	profiles, err = filterProfiles(config, activeProfileName)
+	profiles, err = config.FilterProfiles(config.Data, config.ActiveProfileName)
 	if err != nil {
 		return err
 	}
@@ -67,7 +68,7 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 	// Loop through the filtered profiles and get test results data for each one.
 	for _, profile = range profiles {
 		// Define the endpoint for getting test results data for the current profile.
-		endpoint = fmt.Sprintf("%s/api/test-results", config.URL)
+		endpoint = fmt.Sprintf("%s/api/test-results", config.Data.URL)
 
 		// If control IDs or assessment procedures are specified via the --control-ids
 		// and --assessment-procedures flags, add them as query parameters.
@@ -105,7 +106,7 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 		}
 
 		// Print the response in the specified output format.
-		err = output.Response(response, outputFormat)
+		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err
 		}
@@ -115,12 +116,9 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Define flags for the "emu get results" subcommand.
+	// Define flags for the "emu get test-results" subcommand.
 	getTestResultsCmd.PersistentFlags().StringSliceVarP(&resultsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
 	getTestResultsCmd.PersistentFlags().StringSliceVarP(&resultsAssessmentProcedures, "assessment-procedures", "", []string{}, "Assessment procedures")
 	getTestResultsCmd.PersistentFlags().StringSliceVarP(&resultsCcis, "ccis", "", []string{}, "CCIs")
 	getTestResultsCmd.PersistentFlags().BoolVarP(&resultsLatestOnly, "latest-only", "", false, "Return only the latest test result for each control")
-
-	// Add the "emu get results" subcommand to the "emu get" command.
-	getCmd.AddCommand(getTestResultsCmd)
 }

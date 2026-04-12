@@ -19,25 +19,22 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package delete
 
 import (
-	"github.com/deathlabs/emu/output"
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
 var (
-	configCmd = &cobra.Command{
-		Use:   "config",
-		Short: "Print EMU configuration information",
-		Run:   printConfig,
+	deleteArtifactCmd = &cobra.Command{
+		Use:   "artifact",
+		Short: "Delete an artifact in eMASS",
+		Run:   deleteArtifact,
 	}
 )
 
-func printConfig(cmd *cobra.Command, args []string) {
-	output.Config(config, outputFormat)
-}
-
-func init() {
-	rootCmd.AddCommand(configCmd)
+func deleteArtifact(cmd *cobra.Command, args []string) {
+	fmt.Println("emu delete artifact")
 }

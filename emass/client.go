@@ -23,9 +23,14 @@ package emass
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
+	"path/filepath"
 
+	"github.com/deathlabs/emu/config"
 	"github.com/deathlabs/emu/models"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func getTLSCertificates(publicKeyPath string, privateKeyPath string) ([]tls.Certificate, error) {
@@ -104,4 +109,38 @@ func getHTTPClient(profile models.ConfigProfile) (*http.Client, error) {
 	}
 
 	return client, nil
+}
+
+func SetupClient(cmd *cobra.Command, args []string) error {
+	var err error
+
+	// Check output format specified.
+	if config.OutputFormat != "json" && config.OutputFormat != "yaml" {
+		return fmt.Errorf("invalid output format \"%s\"", config.OutputFormat)
+	}
+
+	// Set the config filepath to the default if one is not provided.
+	if config.Filename != config.DefaultConfigFilePath {
+		viper.SetConfigType("yaml")
+		viper.SetConfigFile(config.Filename)
+	} else {
+		viper.SetConfigFile(filepath.Join(".", config.DefaultConfigFilePath))
+	}
+
+	// Copy the config into memory.
+	err = viper.ReadInConfig()
+	if err != nil {
+		return err
+	}
+
+	// Unmarshal the config into a Config struct.
+	err = viper.Unmarshal(&config.Data)
+	if err != nil {
+		return err
+	}
+
+	// Resolve the profiles for each system in the config.
+	config.Data.ResolveProfilesToSystems()
+
+	return nil
 }

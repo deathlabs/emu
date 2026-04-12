@@ -19,13 +19,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package get
 
 import (
 	"fmt"
 	"net/http"
 	"net/url"
 
+	"github.com/deathlabs/emu/config"
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
 	"github.com/deathlabs/emu/output"
@@ -94,17 +95,17 @@ func getSystems(cmd *cobra.Command, args []string) error {
 
 	// If system IDs are provided via the root-level --system-ids flag, use them to filter systems.
 	// Otherwise, filter profiles based on the active profile name and get all systems for those profiles.
-	if len(systemIDs) != 0 {
+	if len(config.SystemIDs) != 0 {
 		// Filter systems based on system IDs provided via the root-level --system-ids flag.
 		// If no system IDs are provided, this will return all systems for the active profile.
-		systems, err = filterSystems(config, activeProfileName, systemIDs)
+		systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 		if err != nil {
 			return err
 		}
 
 		for _, system = range systems {
 			// Define the endpoint for getting systems data for the current system.
-			endpoint = fmt.Sprintf("%s/api/systems/%d", config.URL, system.ID)
+			endpoint = fmt.Sprintf("%s/api/systems/%d", config.Data.URL, system.ID)
 
 			if len(params) > 0 {
 				endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
@@ -117,14 +118,14 @@ func getSystems(cmd *cobra.Command, args []string) error {
 			}
 
 			// Print the response in the specified output format.
-			err = output.Response(response, outputFormat)
+			err = output.Response(response, config.OutputFormat)
 			if err != nil {
 				return err
 			}
 		}
 	} else {
 		// Filter profiles based on the profile name provided via the root-level --profile flag.
-		profiles, err = filterProfiles(config, activeProfileName)
+		profiles, err = config.FilterProfiles(config.Data, config.ActiveProfileName)
 		if err != nil {
 			return err
 		}
@@ -132,7 +133,7 @@ func getSystems(cmd *cobra.Command, args []string) error {
 		// Loop through the filtered profiles and get systems data for each one.
 		for _, profile = range profiles {
 			// Define the endpoint for getting systems data for the current profile.
-			endpoint = fmt.Sprintf("%s/api/systems", config.URL)
+			endpoint = fmt.Sprintf("%s/api/systems", config.Data.URL)
 
 			if len(params) > 0 {
 				endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
@@ -145,7 +146,7 @@ func getSystems(cmd *cobra.Command, args []string) error {
 			}
 
 			// Print the response in the specified output format.
-			err = output.Response(response, outputFormat)
+			err = output.Response(response, config.OutputFormat)
 			if err != nil {
 				return err
 			}
@@ -164,7 +165,4 @@ func init() {
 	getSystemsCmd.PersistentFlags().BoolVarP(&systemsIncludeDitprMetrics, "include-ditpr-metrics", "", false, "Include DITPR metrics (cannot be used in conjunction with --coams-id or --ditpr-id)")
 	getSystemsCmd.PersistentFlags().StringVarP(&systemsRegistrationType, "registration-type", "", "", "Registration type (assessAndAuthorize, assessOnly, guest, regular, functional, cloudServiceProvider, commonControlProvider, authorizationToUse, reciprocityAcceptance)")
 	getSystemsCmd.PersistentFlags().BoolVarP(&systemsReportsForScorecard, "reports-for-scorecard", "", false, "Return only systems that report to the DOD Cyber Hygiene Scorecard")
-
-	// Add the "emu get systems" subcommand to the "emu get" command.
-	getCmd.AddCommand(getSystemsCmd)
 }

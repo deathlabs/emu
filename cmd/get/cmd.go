@@ -19,19 +19,27 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package get
 
 import (
 	"github.com/spf13/cobra"
 )
 
 var (
-	getCmd = &cobra.Command{
+	Cmd = &cobra.Command{
 		Use:   "get",
 		Short: "Get data",
 	}
 )
 
 func init() {
-	rootCmd.AddCommand(getCmd)
+	Cmd.AddCommand(getArtifactsCmd)
+	Cmd.AddCommand(getConfigCmd)
+	Cmd.AddCommand(getControlsCmd)
+	Cmd.AddCommand(getControlApprovalsCmd)
+	Cmd.AddCommand(getSystemsCmd)
+	Cmd.AddCommand(getSystemRolesCmd)
+	Cmd.AddCommand(getTestResultsCmd)
+	Cmd.AddCommand(getVersionCmd)
+	Cmd.AddCommand(getWorkflowsCmd)
 }

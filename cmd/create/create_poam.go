@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package create
 
 import (
 	"fmt"
@@ -28,19 +28,13 @@ import (
 )
 
 var (
-	emuVersion   = "v4.0.0"
-	emassVersion = "v3.31.0"
-	versionCmd   = &cobra.Command{
-		Use:   "version",
-		Short: "Print EMU and eMASS API version information",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("eMASS Updater version: %s\n", emassVersion)
-			fmt.Printf("eMASS API version: %s\n", emuVersion)
-		},
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error { return nil },
+	createPoamCmd = &cobra.Command{
+		Use:   "create",
+		Short: "Create data",
+		Run:   createPoam,
 	}
 )
 
-func init() {
-	rootCmd.AddCommand(versionCmd)
+func createPoam(cmd *cobra.Command, args []string) {
+	fmt.Println("emu create poam")
 }

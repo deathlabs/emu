@@ -19,39 +19,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package update
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
 var (
-	uploadCmd = &cobra.Command{
-		Use:   "upload",
-		Short: "Upload data",
+	Cmd = &cobra.Command{
+		Use:   "update",
+		Short: "Update data",
 	}
 )
 
-func uploadArtifact(cmd *cobra.Command, args []string) {
-	fmt.Println("emu upload artifact")
-}
-
-func uploadSBOM(cmd *cobra.Command, args []string) {
-	fmt.Println("emu upload sbom")
-}
-
 func init() {
-	uploadCmd.AddCommand(&cobra.Command{
-		Use:   "artifact",
-		Short: "Upload an artifact to eMASS",
-		Run:   uploadArtifact,
-	})
-	uploadCmd.AddCommand(&cobra.Command{
-		Use:   "sbom",
-		Short: "Upload an sbom to eMASS",
-		Run:   uploadSBOM,
-	})
-	rootCmd.AddCommand(uploadCmd)
+	Cmd.AddCommand(updateArtifactCmd)
 }

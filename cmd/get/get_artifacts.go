@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package get
 
 import (
 	"fmt"
@@ -27,6 +27,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/deathlabs/emu/config"
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
 	"github.com/deathlabs/emu/output"
@@ -34,18 +35,22 @@ import (
 )
 
 var (
-	controlApprovalsControlAcronyms []string
+	artifactsFilename             string
+	artifactsControlAcronyms      []string
+	artifactsAssessmentProcedures []string
+	artifactsCcis                 []string
+	artifactsSystemOnly           bool
 )
 
 var (
-	getControlApprovalsCmd = &cobra.Command{
-		Use:   "control-approvals",
-		Short: "Get data about control approvals in the Control Approval Chain (CAC)",
-		RunE:  getControlApprovals,
+	getArtifactsCmd = &cobra.Command{
+		Use:   "artifacts",
+		Short: "Get data about artifacts",
+		RunE:  getArtifacts,
 	}
 )
 
-func getControlApprovals(cmd *cobra.Command, args []string) error {
+func getArtifacts(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
@@ -57,21 +62,37 @@ func getControlApprovals(cmd *cobra.Command, args []string) error {
 
 	params = url.Values{}
 
-	if len(controlApprovalsControlAcronyms) > 0 {
-		params.Set("controlAcronyms", strings.Join(controlApprovalsControlAcronyms, ","))
+	if len(artifactsAssessmentProcedures) > 0 {
+		params.Set("assessmentProcedures", strings.Join(artifactsAssessmentProcedures, ","))
+	}
+
+	if len(artifactsCcis) > 0 {
+		params.Set("ccis", strings.Join(artifactsCcis, ","))
+	}
+
+	if len(artifactsControlAcronyms) > 0 {
+		params.Set("controlAcronyms", strings.Join(artifactsControlAcronyms, ","))
+	}
+
+	if artifactsFilename != "" {
+		params.Set("filename", artifactsFilename)
+	}
+
+	if artifactsSystemOnly {
+		params.Set("systemOnly", "true")
 	}
 
 	// Filter systems based on system IDs provided via the root-level --system-ids flag.
 	// If no system IDs are provided, this will return all systems for the active profile.
-	systems, err = filterSystems(config, activeProfileName, systemIDs)
+	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
 
-	// Loop through the filtered systems and get approvals data for each one.
+	// Loop through the filtered systems and get artifacts data for each one.
 	for _, system = range systems {
-		// Define the endpoint for getting approvals data for the current system.
-		endpoint = fmt.Sprintf("%s/api/systems/%d/approvals/cac", config.URL, system.ID)
+		// Define the endpoint for getting artifacts data for the current system.
+		endpoint = fmt.Sprintf("%s/api/systems/%d/artifacts", config.Data.URL, system.ID)
 
 		if len(params) > 0 {
 			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
@@ -83,7 +104,7 @@ func getControlApprovals(cmd *cobra.Command, args []string) error {
 		}
 
 		// Print the response in the specified output format.
-		err = output.Response(response, outputFormat)
+		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err
 		}
@@ -93,9 +114,10 @@ func getControlApprovals(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Define flags for the "emu get control-approvals" subcommand.
-	getControlApprovalsCmd.PersistentFlags().StringSliceVarP(&controlApprovalsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
-
-	// Add the "emu get control-approvals" subcommand to the "emu get" command.
-	getCmd.AddCommand(getControlApprovalsCmd)
+	// Define flags for the "emu get artifacts" subcommand.
+	getArtifactsCmd.PersistentFlags().StringVarP(&artifactsFilename, "filename", "f", "", "Filename")
+	getArtifactsCmd.PersistentFlags().StringSliceVarP(&artifactsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
+	getArtifactsCmd.PersistentFlags().StringSliceVarP(&artifactsAssessmentProcedures, "assessment-procedures", "", []string{}, "Assessment procedures")
+	getArtifactsCmd.PersistentFlags().StringSliceVarP(&artifactsCcis, "ccis", "", []string{}, "CCIs")
+	getArtifactsCmd.PersistentFlags().BoolVarP(&artifactsSystemOnly, "system-only", "", false, "Exclude control and AP-level artifacts only")
 }

@@ -19,12 +19,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package get
 
 import (
 	"fmt"
 	"net/http"
 
+	"github.com/deathlabs/emu/config"
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
 	"github.com/deathlabs/emu/output"
@@ -50,7 +51,7 @@ func getWorkflows(cmd *cobra.Command, args []string) error {
 
 	// Filter systems based on system IDs provided via the root-level --system-ids flag.
 	// If no system IDs are provided, this will return all systems for the active profile.
-	systems, err = filterSystems(config, activeProfileName, systemIDs)
+	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
@@ -58,7 +59,7 @@ func getWorkflows(cmd *cobra.Command, args []string) error {
 	// Loop through the filtered systems and get workflow data for each one.
 	for _, system = range systems {
 		// Define the endpoint for getting workflow data for the current system.
-		endpoint = fmt.Sprintf("%s/api/systems/%d/approval/pac", config.URL, system.ID)
+		endpoint = fmt.Sprintf("%s/api/systems/%d/approval/pac", config.Data.URL, system.ID)
 
 		// Make the request for workflow data.
 		response, err = emass.Get(system.ConfigProfile, endpoint)
@@ -67,16 +68,11 @@ func getWorkflows(cmd *cobra.Command, args []string) error {
 		}
 
 		// Print the response in the specified output format.
-		err = output.Response(response, outputFormat)
+		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err
 		}
 	}
 
 	return nil
-}
-
-func init() {
-	// Add the "emu get workflows" subcommand to the "emu get" command.
-	getCmd.AddCommand(getWorkflowsCmd)
 }

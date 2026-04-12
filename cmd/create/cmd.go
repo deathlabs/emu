@@ -19,30 +19,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package create
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
 var (
-	createCmd = &cobra.Command{
+	Cmd = &cobra.Command{
 		Use:   "create",
 		Short: "Create data",
 	}
 )
 
-func createPoam(cmd *cobra.Command, args []string) {
-	fmt.Println("emu create poam")
-}
-
 func init() {
-	createCmd.AddCommand(&cobra.Command{
-		Use:   "poam",
-		Short: "Create a POA&M in eMASS",
-		Run:   createPoam,
-	})
-	rootCmd.AddCommand(createCmd)
+	Cmd.AddCommand(createPoamCmd)
 }

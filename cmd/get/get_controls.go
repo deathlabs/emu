@@ -19,7 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package get
 
 import (
 	"fmt"
@@ -27,6 +27,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/deathlabs/emu/config"
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
 	"github.com/deathlabs/emu/output"
@@ -57,7 +58,7 @@ func getControls(cmd *cobra.Command, args []string) error {
 
 	// Filter systems based on system IDs provided via the root-level --system-ids flag.
 	// If no system IDs are provided, this will return all systems for the active profile.
-	systems, err = filterSystems(config, activeProfileName, systemIDs)
+	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
@@ -65,7 +66,7 @@ func getControls(cmd *cobra.Command, args []string) error {
 	// Loop through the filtered systems and get controls data for each one.
 	for _, system = range systems {
 		// Define the endpoint for getting controls data for the current system.
-		endpoint = fmt.Sprintf("%s/api/systems/%d/controls", config.URL, system.ID)
+		endpoint = fmt.Sprintf("%s/api/systems/%d/controls", config.Data.URL, system.ID)
 
 		// If control IDs are specified via the --control-ids flag, add them as a query parameter.
 		params = url.Values{}
@@ -83,7 +84,7 @@ func getControls(cmd *cobra.Command, args []string) error {
 		}
 
 		// Print the response in the specified output format.
-		err = output.Response(response, outputFormat)
+		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err
 		}
@@ -95,7 +96,4 @@ func getControls(cmd *cobra.Command, args []string) error {
 func init() {
 	// Define flags for the "emu get controls" subcommand.
 	getControlsCmd.PersistentFlags().StringSliceVarP(&controlsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
-
-	// Add the "emu get controls" subcommand to the "emu get" command.
-	getCmd.AddCommand(getControlsCmd)
 }

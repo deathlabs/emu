@@ -19,13 +19,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package cmd
+package get
 
 import (
 	"fmt"
 	"net/http"
 	"net/url"
 
+	"github.com/deathlabs/emu/config"
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
 	"github.com/deathlabs/emu/output"
@@ -57,7 +58,7 @@ func getSystemRoles(cmd *cobra.Command, args []string) error {
 	)
 
 	// Filter profiles based on the profile name provided via the root-level --profile flag.
-	profiles, err = filterProfiles(config, activeProfileName)
+	profiles, err = config.FilterProfiles(config.Data, config.ActiveProfileName)
 	if err != nil {
 		return err
 	}
@@ -65,7 +66,7 @@ func getSystemRoles(cmd *cobra.Command, args []string) error {
 	// Loop through the filtered profiles and get system role data for each one.
 	for _, profile = range profiles {
 		// Define the endpoint for getting system roles data for the current profile.
-		endpoint = fmt.Sprintf("%s/api/system-roles", config.URL)
+		endpoint = fmt.Sprintf("%s/api/system-roles", config.Data.URL)
 
 		// If a role category is specified via the --category flag,
 		// add it to the endpoint and set the required parameter.
@@ -98,7 +99,7 @@ func getSystemRoles(cmd *cobra.Command, args []string) error {
 		}
 
 		// Print the response in the specified output format.
-		err = output.Response(response, outputFormat)
+		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err
 		}
@@ -108,11 +109,8 @@ func getSystemRoles(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Define flags for the "emu get roles" subcommand.
+	// Define flags for the "emu get system-roles" subcommand.
 	getSystemRolesCmd.Flags().StringVarP(&rolesCategory, "category", "", "", "PAC, CAC, or Other")
 	getSystemRolesCmd.Flags().StringVarP(&rolesRole, "role", "", "", "ISO, ISSM, SCA, Auditor, AO, etc. (required if --category is used)")
 	getSystemRolesCmd.Flags().StringVarP(&rolesPolicy, "policy", "", "", "RMF, DIACAP, or Reporting")
-
-	// Add the "emu get roles" subcommand to the "emu get" command.
-	getCmd.AddCommand(getSystemRolesCmd)
 }
