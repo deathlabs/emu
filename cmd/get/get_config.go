@@ -31,8 +31,16 @@ var (
 	getConfigCmd = &cobra.Command{
 		Use:   "config",
 		Short: "Print EMU configuration information",
-		Run: func(cmd *cobra.Command, args []string) {
-			output.Config(config.Data, config.OutputFormat)
-		},
+		RunE:  outputConfig,
 	}
 )
+
+func outputConfig(cmd *cobra.Command, args []string) error {
+	var err error
+
+	err = output.Config(config.Data, config.OutputFormat)
+	if err != nil {
+		return err
+	}
+	return nil
+}

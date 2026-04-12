@@ -31,12 +31,16 @@ var (
 	getVersionCmd = &cobra.Command{
 		Use:               "version",
 		Short:             "Print EMU and eMASS API version information",
-		Run:               getVersion,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error { return nil },
+		PersistentPreRunE: doNothing,
+		Run:               printVersion,
 	}
 )
 
-func getVersion(cmd *cobra.Command, args []string) {
+func doNothing(cmd *cobra.Command, args []string) error {
+	return nil
+}
+
+func printVersion(cmd *cobra.Command, args []string) {
 	var (
 		emuVersion   = "v4.0.0"
 		emassVersion = "v3.31.0"

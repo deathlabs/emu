@@ -40,6 +40,5 @@ func init() {
 	Cmd.AddCommand(getSystemsCmd)
 	Cmd.AddCommand(getSystemRolesCmd)
 	Cmd.AddCommand(getTestResultsCmd)
-	Cmd.AddCommand(getVersionCmd)
 	Cmd.AddCommand(getWorkflowsCmd)
 }

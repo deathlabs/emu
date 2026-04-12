@@ -22,6 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/deathlabs/emu/cmd/create"
@@ -34,10 +35,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	emuVersion   = "v4.0.0"
+	emassVersion = "v3.31.0"
+)
+
 var (
 	rootCmd = &cobra.Command{
-		Use:   "emu",
-		Short: "eMASS Updater (EMU) is a tool for automating eMASS records management.",
+		Use:     "emu",
+		Short:   "eMASS Updater (EMU) is a tool for automating eMASS records management.",
+		Version: fmt.Sprintf("%s\neMASS API version %s", emuVersion, emassVersion),
 	}
 )
 

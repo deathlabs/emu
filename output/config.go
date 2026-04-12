@@ -23,20 +23,19 @@ package output
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/deathlabs/emu/models"
 )
 
-func Config(config models.Config, format string) {
+func Config(config models.Config, format string) error {
 	switch strings.ToLower(format) {
 	case "json":
 		ToJSON(config)
 	case "yaml":
 		ToYAML(config)
 	default:
-		fmt.Printf("Unsupported output format: %s\n", format)
-		os.Exit(1)
+		return fmt.Errorf("unsupported output format: %s", format)
 	}
+	return nil
 }
