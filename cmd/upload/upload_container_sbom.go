@@ -47,7 +47,7 @@ var (
 var (
 	uploadContainerSBOMCmd = &cobra.Command{
 		Use:   "container-sbom",
-		Short: "Upload an sbom to eMASS",
+		Short: "Upload an container sbom to eMASS",
 		RunE:  uploadContainerSBOM,
 	}
 )
