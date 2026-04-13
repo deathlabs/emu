@@ -36,3 +36,4 @@ emu
 *.key
 .emu.yaml
 sbom.json
+*.xlsm

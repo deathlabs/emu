@@ -34,6 +34,7 @@ import (
 	"github.com/deathlabs/emu/output"
 	"github.com/gocarina/gocsv"
 	"github.com/spf13/cobra"
+	"github.com/xuri/excelize/v2"
 )
 
 var (
@@ -45,9 +46,83 @@ var (
 	uploadSoftwareBaselineCmd = &cobra.Command{
 		Use:   "software-baseline",
 		Short: "Upload a software baseline to eMASS",
-		RunE:  uploadSoftwareBaseline,
+		RunE:  uploadSoftwareBaseline2,
 	}
 )
+
+func closeExcelFile(file *excelize.File) error {
+	var err error
+
+	err = file.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func uploadSoftwareBaseline2(cmd *cobra.Command, args []string) error {
+	var (
+		err                   error
+		file                  *excelize.File
+		row                   []string
+		rows                  [][]string
+		softwareBaseline      []models.SoftwareBaselineEntry
+		softwareBaselineEntry models.SoftwareBaselineEntry
+	)
+
+	// Open software baseline.
+	file, err = excelize.OpenFile(softwareBaselinePath)
+	if err != nil {
+		return err
+	}
+	defer closeExcelFile(file)
+
+	rows, err = file.GetRows("Software")
+	if err != nil {
+		return err
+	}
+
+	for _, row = range rows[7:] {
+		softwareBaselineEntry = models.SoftwareBaselineEntry{
+			SoftwareType:   row[1],
+			SoftwareVendor: row[2],
+			SoftwareName:   row[3],
+			Version:        row[4],
+			ParentSystem:   row[5],
+			//Subsystem:                    row[6],
+			//Network:                      row[7],
+			//HostingEnvironment:           row[8],
+			//SoftwareDependencies:         row[9],
+			//CryptographicHash:            row[10],
+			//InServiceDate:                row[11],
+			//ItBudgetUii:                  row[12],
+			//FiscalYear:                   row[13],
+			//PopEndDate:                   row[14],
+			//LicenseOrContract:            row[15],
+			//LicenseTerm:                  row[16],
+			//CostPerLicense:               row[17],
+			//TotalLicenses:                row[18],
+			//LicensesUsed:                 row[19],
+			//LicensePoc:                   row[20],
+			//LicenseRenewalDate:           row[21],
+			//ApprovalStatus:               row[22],
+			//ApprovalDate:                 row[23],
+			//ReleaseDate:                  row[24],
+			//MaintenanceDate:              row[25],
+			//RetirementDate:               row[26],
+			//EndOfLifeSupportDate:         row[27],
+			//ExtendedEndOfLifeSupportDate: row[28],
+			//CriticalAsset:                row[29],
+			//Location:                     row[30],
+			//Purpose:                      row[31],
+		}
+		fmt.Println(softwareBaselineEntry)
+		softwareBaseline = append(softwareBaseline, softwareBaselineEntry)
+	}
+
+	return nil
+}
 
 func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
 	var (
