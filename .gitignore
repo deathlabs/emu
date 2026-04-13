@@ -35,3 +35,4 @@ emu
 *.cer
 *.key
 .emu.yaml
+sbom.json

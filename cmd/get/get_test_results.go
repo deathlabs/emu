@@ -54,21 +54,22 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 		endpoint string
 		err      error
 		params   url.Values
-		profile  models.ConfigProfile
-		profiles []models.ConfigProfile
+		system   models.System
+		systems  []models.System
 		response *http.Response
 	)
 
-	// Filter profiles based on the profile name provided via the root-level --profile flag.
-	profiles, err = config.FilterProfiles(config.Data, config.ActiveProfileName)
+	// Filter systems based on system IDs provided via the root-level --system-ids flag.
+	// If no system IDs are provided, this will return all systems for the active profile.
+	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
 
-	// Loop through the filtered profiles and get test results data for each one.
-	for _, profile = range profiles {
-		// Define the endpoint for getting test results data for the current profile.
-		endpoint = fmt.Sprintf("%s/api/test-results", config.Data.URL)
+	// Loop through the filtered systems and get approvals data for each one.
+	for _, system = range systems {
+		// Define the endpoint for getting approvals data for the current system.
+		endpoint = fmt.Sprintf("%s/api/systems/%d/test-results", config.Data.URL, system.ID)
 
 		// If control IDs or assessment procedures are specified via the --control-ids
 		// and --assessment-procedures flags, add them as query parameters.
@@ -100,7 +101,7 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 		}
 
 		// Make the request for test results data.
-		response, err = emass.Get(profile, endpoint)
+		response, err = emass.Get(system.ConfigProfile, endpoint)
 		if err != nil {
 			return err
 		}
