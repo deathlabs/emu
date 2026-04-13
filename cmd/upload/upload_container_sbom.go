@@ -38,10 +38,10 @@ import (
 )
 
 var (
-	containerIdentifier string
-	containerName       string
-	sbomPath            string
-	sbomFormat          string
+	containerSbomContainerIdentifier string
+	containerSbomContainerName       string
+	containerSbomSbomPath            string
+	containerSbomSbomFormat          string
 )
 
 var (
@@ -76,12 +76,12 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 	for _, system = range systems {
 		writer = multipart.NewWriter(&body)
 
-		fileWriter, err = writer.CreateFormFile("file", filepath.Base(sbomPath))
+		fileWriter, err = writer.CreateFormFile("file", filepath.Base(containerSbomSbomPath))
 		if err != nil {
 			return err
 		}
 
-		file, err = os.Open(sbomPath)
+		file, err = os.Open(containerSbomSbomPath)
 		if err != nil {
 			return err
 		}
@@ -92,9 +92,9 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		writer.WriteField("containerName", containerName)
-		writer.WriteField("containerIdentifier", containerIdentifier)
-		writer.WriteField("format", sbomFormat)
+		writer.WriteField("containerName", containerSbomContainerName)
+		writer.WriteField("containerIdentifier", containerSbomContainerIdentifier)
+		writer.WriteField("format", containerSbomSbomFormat)
 		writer.Close()
 
 		endpoint = fmt.Sprintf("%s/api/systems/%d/containers/sbom", config.Data.URL, system.ID)
@@ -114,8 +114,8 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 
 func init() {
 	// Define flags for the "emu get container-sbom" subcommand.
-	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&sbomPath, "file", "f", "", "Filepath to container SBOM")
-	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&sbomPath, "format", "", "", "Container SBOM format")
-	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerName, "container-name", "", "", "Container name")
-	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerIdentifier, "container-id", "", "", "Container ID (e.g., tag)")
+	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomSbomPath, "file", "f", "", "Filepath to container SBOM")
+	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomSbomFormat, "format", "", "", "Container SBOM format")
+	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomContainerName, "container-name", "", "", "Container name")
+	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomContainerIdentifier, "container-id", "", "", "Container ID (e.g., tag)")
 }
