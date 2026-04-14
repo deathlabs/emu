@@ -24,15 +24,14 @@ package upload
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/deathlabs/emu/config"
 	"github.com/deathlabs/emu/emass"
 	"github.com/deathlabs/emu/models"
 	"github.com/deathlabs/emu/output"
-	"github.com/gocarina/gocsv"
 	"github.com/spf13/cobra"
 	"github.com/xuri/excelize/v2"
 )
@@ -46,7 +45,7 @@ var (
 	uploadSoftwareBaselineCmd = &cobra.Command{
 		Use:   "software-baseline",
 		Short: "Upload a software baseline to eMASS",
-		RunE:  uploadSoftwareBaseline2,
+		RunE:  uploadSoftwareBaseline,
 	}
 )
 
@@ -61,35 +60,48 @@ func closeExcelFile(file *excelize.File) error {
 	return nil
 }
 
-func uploadSoftwareBaseline2(cmd *cobra.Command, args []string) error {
+func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
 	var (
+		body                  *bytes.Buffer
+		endpoint              string
 		err                   error
 		file                  *excelize.File
+		jsonData              []byte
+		response              *http.Response
 		row                   []string
 		rows                  [][]string
 		softwareBaseline      []models.SoftwareBaselineEntry
 		softwareBaselineEntry models.SoftwareBaselineEntry
+		system                models.System
+		systems               []models.System
 	)
 
-	// Open software baseline.
+	// Check the argument provided for the "softwareBaselinePath" parameter.
+	if softwareBaselinePath == "" {
+		return errors.New("a file path for the software baseline was not provided")
+	}
+
+	// Open the XLSM file specified.
 	file, err = excelize.OpenFile(softwareBaselinePath)
 	if err != nil {
 		return err
 	}
 	defer closeExcelFile(file)
 
+	// Get all the rows from the "Software" tab in the XLSM file.
 	rows, err = file.GetRows("Software")
 	if err != nil {
 		return err
 	}
 
+	// Build a software baseline based on all the rows collected.
 	for _, row = range rows[7:] {
 		softwareBaselineEntry = models.SoftwareBaselineEntry{
 			SoftwareType:   row[1],
 			SoftwareVendor: row[2],
 			SoftwareName:   row[3],
 			Version:        row[4],
-			ParentSystem:   row[5],
+			//ParentSystem:                 row[5],
 			//Subsystem:                    row[6],
 			//Network:                      row[7],
 			//HostingEnvironment:           row[8],
@@ -117,24 +129,15 @@ func uploadSoftwareBaseline2(cmd *cobra.Command, args []string) error {
 			//Location:                     row[30],
 			//Purpose:                      row[31],
 		}
-		fmt.Println(softwareBaselineEntry)
 		softwareBaseline = append(softwareBaseline, softwareBaselineEntry)
 	}
 
-	return nil
-}
-
-func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
-	var (
-		body     []byte
-		endpoint string
-		entries  []models.SoftwareBaselineEntry
-		err      error
-		file     *os.File
-		response *http.Response
-		system   models.System
-		systems  []models.System
-	)
+	// Convert the software baseline to JSON and then a sequence of bytes.
+	jsonData, err = json.Marshal(softwareBaseline)
+	if err != nil {
+		return err
+	}
+	body = bytes.NewBuffer(jsonData)
 
 	// Filter systems based on system IDs provided via the root-level --system-ids flag.
 	// If no system IDs are provided, this will return all systems for the active profile.
@@ -143,31 +146,10 @@ func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	file, err = os.Open(softwareBaselinePath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	switch softwareBaselineFileType {
-	case "json":
-		err = json.NewDecoder(file).Decode(&entries)
-	default:
-		err = gocsv.UnmarshalFile(file, &entries)
-	}
-	if err != nil {
-		return err
-	}
-
-	body, err = json.Marshal(entries)
-	if err != nil {
-		return err
-	}
-
 	// Loop through the filtered systems and upload a software baseline to each one.
 	for _, system = range systems {
 		endpoint = fmt.Sprintf("%s/api/systems/%d/sw-baseline", config.Data.URL, system.ID)
-		response, err = emass.Post(system.ConfigProfile, endpoint, bytes.NewBuffer(body), "application/json")
+		response, err = emass.Post(system.ConfigProfile, endpoint, body, "application/json")
 		if err != nil {
 			return err
 		}
@@ -184,6 +166,5 @@ func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
 
 func init() {
 	// Define flags for the "emu upload software-baseline" subcommand.
-	uploadSoftwareBaselineCmd.PersistentFlags().StringVarP(&softwareBaselineFileType, "type", "t", "csv", "File type of the software baseline (csv, json)")
-	uploadSoftwareBaselineCmd.PersistentFlags().StringVarP(&softwareBaselinePath, "file", "f", "", "Filepath to software baseline")
+	uploadSoftwareBaselineCmd.PersistentFlags().StringVarP(&softwareBaselinePath, "file", "f", "", "File path to the software baseline")
 }
