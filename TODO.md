@@ -3,6 +3,7 @@
 - [x] Add params to control approvals
 - [x] Add params to systems
 - [x] Add params to test results
+- [ ] Make the "systems" key in the config file optional
 - [ ] Add get function for POA&Ms
 - [ ] Add get function for milestones
 - [ ] Add get function for hardware baseline
@@ -20,3 +21,6 @@
 - [ ] Add get function for dashboards
 - [ ] Add get function for test connection
 - [ ] Ensure output format in config file is used
+- [x] Add upload function for container SBOMs
+- [ ] Add upload function for application SBOMs
+- [ ] Add argument checks for container SBOM upload function

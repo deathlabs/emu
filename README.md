@@ -1,5 +1,5 @@
 # `emu`
-A tool for automating eMASS records management.
+A CLI tool for automating eMASS records management.
 
 ## Quickstart
 **Step 1.** Use the provided Makefile to build and install `emu`. 
@@ -86,13 +86,4 @@ You should get output similar to below.
     "systemId": 2015
   }
 ]
-```
-
-## Examples
-```bash
-# Text goes here.
-emu get roles --category cac --role iso
-
-# Text goes here.
-emu get control --control-id ac-1
 ```

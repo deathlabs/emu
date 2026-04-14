@@ -35,3 +35,7 @@ emu
 *.cer
 *.key
 .emu.yaml
+sbom.json
+*.xlsm
+demo.md
+demo.ipynb

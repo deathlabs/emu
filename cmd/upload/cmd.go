@@ -34,5 +34,6 @@ var (
 
 func init() {
 	Cmd.AddCommand(uploadArtifactCmd)
-	Cmd.AddCommand(uploadSBOMCmd)
+	Cmd.AddCommand(uploadContainerSBOMCmd)
+	Cmd.AddCommand(uploadSoftwareBaselineCmd)
 }

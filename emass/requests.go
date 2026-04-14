@@ -22,6 +22,7 @@ THE SOFTWARE.
 package emass
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 
@@ -92,6 +93,46 @@ func Get(profile models.ConfigProfile, endpoint string) (*http.Response, error) 
 		return nil, fmt.Errorf("HTTP status code %d: %s", response.StatusCode, getHTTPStatusCodeDescription(response))
 	}
 
+	// Return the HTTP response.
+	return response, nil
+}
+
+// Post sends an HTTP POST request using the endpoint, profile, and body specified and returns the HTTP response.
+func Post(profile models.ConfigProfile, endpoint string, body *bytes.Buffer, contentType string) (*http.Response, error) {
+	var (
+		client   *http.Client
+		err      error
+		request  *http.Request
+		response *http.Response
+	)
+
+	// Get an HTTPS client for the specified profile.
+	client, err = getHTTPClient(profile)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create an HTTP request for the specified endpoint.
+	request, err = http.NewRequest(http.MethodPost, endpoint, body)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set the headers required for the HTTP request.
+	request.Header.Set("Content-Type", contentType)
+	request.Header.Set("api-key", profile.APIKey)
+	request.Header.Set("user-uid", profile.UserUID)
+
+	// Send the HTTP request.
+	response, err = client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check the HTTP response status code.
+	if response.StatusCode != 200 && response.StatusCode != 201 {
+		return nil, fmt.Errorf("HTTP status code %d: %s", response.StatusCode, getHTTPStatusCodeDescription(response))
+	}
 	// Return the HTTP response.
 	return response, nil
 }
