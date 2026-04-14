@@ -1,5 +1,5 @@
 # `emu`
-A tool for automating eMASS records management.
+A CLI tool for automating eMASS records management.
 
 ## Quickstart
 **Step 1.** Use the provided Makefile to build and install `emu`. 
