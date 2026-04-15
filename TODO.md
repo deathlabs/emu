@@ -7,7 +7,7 @@
 - [ ] Add get function for POA&Ms
 - [ ] Add get function for milestones
 - [ ] Add get function for hardware baseline
-- [ ] Add get function for software baseline
+- [x] Add get function for software baseline
 - [ ] Add get function for ports/protocols
 - [ ] Add get function for device scan results
 - [ ] Add get function for cloud resource results
