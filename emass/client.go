@@ -27,8 +27,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/deathlabs/emu/config"
-	"github.com/deathlabs/emu/models"
+	"github.com/deathlabs/emu/v4/config"
+	"github.com/deathlabs/emu/v4/models"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

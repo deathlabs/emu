@@ -1,4 +1,4 @@
-module github.com/deathlabs/emu
+module github.com/deathlabs/emu/v4
 
 go 1.26.2
 

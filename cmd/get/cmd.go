@@ -37,6 +37,7 @@ func init() {
 	Cmd.AddCommand(getConfigCmd)
 	Cmd.AddCommand(getControlsCmd)
 	Cmd.AddCommand(getControlApprovalsCmd)
+	Cmd.AddCommand(getPpsCmd)
 	Cmd.AddCommand(getSystemsCmd)
 	Cmd.AddCommand(getSystemRolesCmd)
 	Cmd.AddCommand(getTestResultsCmd)

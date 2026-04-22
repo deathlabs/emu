@@ -3,12 +3,13 @@
 - [x] Add params to control approvals
 - [x] Add params to systems
 - [x] Add params to test results
-- [ ] Make the "systems" key in the config file optional
+- [x] Add get function for software baseline
+- [x] Add get function for ports, protocols, and services
+- [x] Add upload function for container SBOMs
+- [ ] Add argument checks for container SBOM upload function
 - [ ] Add get function for POA&Ms
 - [ ] Add get function for milestones
 - [ ] Add get function for hardware baseline
-- [x] Add get function for software baseline
-- [ ] Add get function for ports/protocols
 - [ ] Add get function for device scan results
 - [ ] Add get function for cloud resource results
 - [ ] Add get function for container scan results
@@ -20,7 +21,6 @@
 - [ ] Add get function for CMCC SPRS ingest status
 - [ ] Add get function for dashboards
 - [ ] Add get function for test connection
-- [ ] Ensure output format in config file is used
-- [x] Add upload function for container SBOMs
 - [ ] Add upload function for application SBOMs
-- [ ] Add argument checks for container SBOM upload function
+- [ ] Ensure output format in config file is used
+- [ ] Make the "systems" key in the config file optional

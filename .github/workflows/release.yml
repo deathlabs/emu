@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  secrets:
+    name: Secrets Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v4
+      - name: Run Trufflehog
+        id: trufflehog
+        uses: trufflesecurity/trufflehog@main
+        continue-on-error: false
+
+  sca:
+    name: Software Composition Analysis
+    needs: secrets
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate an SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          output-file: emu-sbom.json
+          artifact-name: emu-sbom
+      - name: Check for CVEs
+        uses: anchore/scan-action@v3
+        with:
+          sbom: emu-sbom.json
+          severity-cutoff: high
+
+  sast:
+    name: Static App Security Test
+    needs: secrets
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v4
+      - name: Perform a SAST scan
+        run: semgrep scan --config auto .
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [sca, sast]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.2'
+          cache: true
+
+      - name: Build binaries
+        run: |
+          GOOS=linux   GOARCH=amd64 go build -o dist/emu-linux-amd64       .
+          GOOS=windows GOARCH=amd64 go build -o dist/emu-windows-amd64.exe .
+
+      - name: Extract release notes
+        id: release_notes
+        uses: ffurrer2/extract-release-notes@v2
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: EMU ${{ github.ref_name }}
+          body: ${{ steps.release_notes.outputs.release_notes }}
+          files: dist/*
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') }}

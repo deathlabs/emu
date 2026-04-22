@@ -22,7 +22,7 @@ THE SOFTWARE.
 package config
 
 import (
-	"github.com/deathlabs/emu/models"
+	"github.com/deathlabs/emu/v4/models"
 )
 
 var (
