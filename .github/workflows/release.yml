@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   secrets:
-    name: Secrets Check
+    name: Secrets Scan
     runs-on: ubuntu-latest
     steps:
       - name: Clone the repository
@@ -34,7 +34,7 @@ jobs:
         uses: golangci/golangci-lint-action@v9
 
   sca:
-    name: Software Composition Analysis
+    name: SBOM Scan
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -54,7 +54,7 @@ jobs:
           severity-cutoff: high
 
   sast:
-    name: Static App Security Test
+    name: SAST Scan
     runs-on: ubuntu-latest
     container:
       image: semgrep/semgrep
