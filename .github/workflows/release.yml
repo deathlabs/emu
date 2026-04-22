@@ -20,6 +20,23 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         continue-on-error: false
 
+  lint:
+    name: Lint
+    needs: secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.2'
+          cache: true
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+
   sca:
     name: Software Composition Analysis
     needs: secrets
@@ -36,7 +53,7 @@ jobs:
           output-file: emu-sbom.json
           artifact-name: emu-sbom
       - name: Check for CVEs
-        uses: anchore/scan-action@v3
+        uses: anchore/scan-action@v7
         with:
           sbom: emu-sbom.json
           severity-cutoff: high
@@ -63,22 +80,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Install Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.26.2'
           cache: true
-
       - name: Build binaries
         run: |
           GOOS=linux   GOARCH=amd64 go build -o dist/emu-linux-amd64       .
           GOOS=windows GOARCH=amd64 go build -o dist/emu-windows-amd64.exe .
-
       - name: Extract release notes
         id: release_notes
         uses: ffurrer2/extract-release-notes@v2
-
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
