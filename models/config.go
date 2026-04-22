@@ -45,7 +45,7 @@ func (config *Config) ResolveProfilesToSystems() {
 		ok           bool
 		profile      ConfigProfile
 		profileIndex int
-		profiles     map[string]ConfigProfile = make(map[string]ConfigProfile)
+		profiles     = make(map[string]ConfigProfile)
 		profileName  string
 		system       map[string]interface{}
 		systemIndex  int

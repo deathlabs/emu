@@ -28,17 +28,16 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/deathlabs/emu/config"
-	"github.com/deathlabs/emu/emass"
-	"github.com/deathlabs/emu/models"
-	"github.com/deathlabs/emu/output"
+	"github.com/deathlabs/emu/v4/config"
+	"github.com/deathlabs/emu/v4/emass"
+	"github.com/deathlabs/emu/v4/models"
+	"github.com/deathlabs/emu/v4/output"
 	"github.com/spf13/cobra"
 	"github.com/xuri/excelize/v2"
 )
 
 var (
-	softwareBaselineFileType string
-	softwareBaselinePath     string
+	softwareBaselinePath string
 )
 
 var (
@@ -48,17 +47,6 @@ var (
 		RunE:  uploadSoftwareBaseline,
 	}
 )
-
-func closeExcelFile(file *excelize.File) error {
-	var err error
-
-	err = file.Close()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
 	var (
@@ -86,10 +74,15 @@ func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	defer closeExcelFile(file)
 
 	// Get all the rows from the "Software" tab in the XLSM file.
 	rows, err = file.GetRows("Software")
+	if err != nil {
+		return err
+	}
+
+	// Close the XLSM file.
+	err = file.Close()
 	if err != nil {
 		return err
 	}

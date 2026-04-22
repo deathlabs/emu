@@ -25,7 +25,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/deathlabs/emu/models"
+	"github.com/deathlabs/emu/v4/models"
 )
 
 func Config(config models.Config, format string) error {

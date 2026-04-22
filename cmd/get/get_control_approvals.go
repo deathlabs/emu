@@ -27,10 +27,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/deathlabs/emu/config"
-	"github.com/deathlabs/emu/emass"
-	"github.com/deathlabs/emu/models"
-	"github.com/deathlabs/emu/output"
+	"github.com/deathlabs/emu/v4/config"
+	"github.com/deathlabs/emu/v4/emass"
+	"github.com/deathlabs/emu/v4/models"
+	"github.com/deathlabs/emu/v4/output"
 	"github.com/spf13/cobra"
 )
 

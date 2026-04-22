@@ -65,9 +65,6 @@ func (profile ConfigProfile) MaskedUserUID() string {
 }
 
 func (profile ConfigProfile) MarshalYAML() (interface{}, error) {
-	// Create an alias to avoid infinite recursion when calling yaml.Marshal within this method.
-	type Alias ConfigProfile
-
 	// Create a new struct that embeds the alias and adds the masked API key field.
 	type Output struct {
 		Name           string `yaml:"name"`

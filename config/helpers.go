@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/deathlabs/emu/models"
+	"github.com/deathlabs/emu/v4/models"
 )
 
 func ContainsSystemID(ids []int, id int) bool {

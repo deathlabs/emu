@@ -30,10 +30,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/deathlabs/emu/config"
-	"github.com/deathlabs/emu/emass"
-	"github.com/deathlabs/emu/models"
-	"github.com/deathlabs/emu/output"
+	"github.com/deathlabs/emu/v4/config"
+	"github.com/deathlabs/emu/v4/emass"
+	"github.com/deathlabs/emu/v4/models"
+	"github.com/deathlabs/emu/v4/output"
 	"github.com/spf13/cobra"
 )
 
@@ -85,17 +85,36 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		defer file.Close()
 
 		_, err = io.Copy(fileWriter, file)
 		if err != nil {
 			return err
 		}
 
-		writer.WriteField("containerName", containerSbomContainerName)
-		writer.WriteField("containerIdentifier", containerSbomContainerIdentifier)
-		writer.WriteField("format", containerSbomSbomFormat)
-		writer.Close()
+		err = file.Close()
+		if err != nil {
+			return err
+		}
+
+		err = writer.WriteField("containerName", containerSbomContainerName)
+		if err != nil {
+			return err
+		}
+
+		err = writer.WriteField("containerIdentifier", containerSbomContainerIdentifier)
+		if err != nil {
+			return err
+		}
+
+		err = writer.WriteField("format", containerSbomSbomFormat)
+		if err != nil {
+			return err
+		}
+
+		err = writer.Close()
+		if err != nil {
+			return err
+		}
 
 		endpoint = fmt.Sprintf("%s/api/systems/%d/containers/sbom", config.Data.URL, system.ID)
 		response, err = emass.Post(system.ConfigProfile, endpoint, &body, writer.FormDataContentType())

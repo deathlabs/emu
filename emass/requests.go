@@ -26,7 +26,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/deathlabs/emu/models"
+	"github.com/deathlabs/emu/v4/models"
 )
 
 func getHTTPStatusCodeDescription(response *http.Response) string {
