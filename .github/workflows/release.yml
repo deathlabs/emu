@@ -79,8 +79,8 @@ jobs:
           go-version: '1.26.2'
       - name: Build EMU
         run: |
-          GOOS=linux   GOARCH=amd64 go build -o dist/emu-linux-amd64       .
-          GOOS=windows GOARCH=amd64 go build -o dist/emu-windows-amd64.exe .
+          CGO_ENABLED=0 GOOS=linux   GOARCH=amd64 go build -o dist/emu-linux-amd64       .
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o dist/emu-windows-amd64.exe .
       - name: Extract release notes
         id: release_notes
         uses: ffurrer2/extract-release-notes@v2
