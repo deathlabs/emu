@@ -6,7 +6,7 @@
 - [x] Add get function for software baseline
 - [x] Add get function for ports, protocols, and services
 - [x] Add upload function for container SBOMs
-- [ ] Add argument checks for container SBOM upload function
+- [ ] Add argument checks for upload container SBOM function
 - [ ] Add get function for POA&Ms
 - [ ] Add get function for milestones
 - [ ] Add get function for hardware baseline
@@ -18,7 +18,7 @@
 - [ ] Add get function for workflow definitions
 - [ ] Add get function for workflow instances
 - [ ] Add get function for CMMC assessments
-- [ ] Add get function for CMCC SPRS ingest status
+- [ ] Add get function for CMMC SPRS ingest status
 - [ ] Add get function for dashboards
 - [ ] Add get function for test connection
 - [ ] Add upload function for application SBOMs
