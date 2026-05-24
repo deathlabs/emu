@@ -1,5 +1,5 @@
 /*
-Copyright © 2026 Vic Fernandez III <@cyberphor>
+Copyright © 2026 Victor Fernandez III <@cyberphor>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import (
 	"github.com/deathlabs/emu/v4/cmd/create"
 	"github.com/deathlabs/emu/v4/cmd/delete"
 	"github.com/deathlabs/emu/v4/cmd/get"
+	"github.com/deathlabs/emu/v4/cmd/test"
 	"github.com/deathlabs/emu/v4/cmd/update"
 	"github.com/deathlabs/emu/v4/cmd/upload"
 	"github.com/deathlabs/emu/v4/config"
@@ -69,6 +70,7 @@ func init() {
 	rootCmd.AddCommand(create.Cmd)
 	rootCmd.AddCommand(delete.Cmd)
 	rootCmd.AddCommand(get.Cmd)
+	rootCmd.AddCommand(test.Cmd)
 	rootCmd.AddCommand(update.Cmd)
 	rootCmd.AddCommand(upload.Cmd)
 }
