@@ -1,5 +1,5 @@
 /*
-Copyright © 2026 Vic Fernandez III <@cyberphor>
+Copyright © 2026 Victor Fernandez III <@cyberphor>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ import (
 var (
 	testAPICmd = &cobra.Command{
 		Use:   "api",
-		Short: "Test connectivity to the eMASS API connection",
+		Short: "Test connectivity to the eMASS API",
 		RunE:  testAPI,
 	}
 )

@@ -5,6 +5,7 @@ All notable changes to EMU will be documented in this file.
 ## [4.0.1] - 2026-05-24
 ### Added
 - `emu test api` subcommand for testing connectivity to the eMASS API
+- Replaced `Vic Fernandez III` with `Victor Fernandez III` throughout
 
 ## [4.0.0] - 2026-04-23
 ### Added
