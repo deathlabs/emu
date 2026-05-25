@@ -98,12 +98,14 @@ func Get(profile models.ConfigProfile, endpoint string) (*http.Response, error) 
 }
 
 // Post sends an HTTP POST request using the endpoint, profile, and body specified and returns the HTTP response.
-func Post(profile models.ConfigProfile, endpoint string, body *bytes.Buffer, contentType string) (*http.Response, error) {
+func Post(profile models.ConfigProfile, endpoint string, headers map[string]string, body *bytes.Buffer) (*http.Response, error) {
 	var (
-		client   *http.Client
-		err      error
-		request  *http.Request
-		response *http.Response
+		client             *http.Client
+		err                error
+		request            *http.Request
+		requestHeaderName  string
+		requestHeaderValue string
+		response           *http.Response
 	)
 
 	// Get an HTTPS client for the specified profile.
@@ -119,9 +121,11 @@ func Post(profile models.ConfigProfile, endpoint string, body *bytes.Buffer, con
 	}
 
 	// Set the headers required for the HTTP request.
-	request.Header.Set("Content-Type", contentType)
 	request.Header.Set("api-key", profile.APIKey)
 	request.Header.Set("user-uid", profile.UserUID)
+	for requestHeaderName, requestHeaderValue = range headers {
+		request.Header.Set(requestHeaderName, requestHeaderValue)
+	}
 
 	// Send the HTTP request.
 	response, err = client.Do(request)
@@ -133,6 +137,7 @@ func Post(profile models.ConfigProfile, endpoint string, body *bytes.Buffer, con
 	if response.StatusCode != 200 && response.StatusCode != 201 {
 		return nil, fmt.Errorf("HTTP status code %d: %s", response.StatusCode, getHTTPStatusCodeDescription(response))
 	}
+
 	// Return the HTTP response.
 	return response, nil
 }
