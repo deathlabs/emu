@@ -59,6 +59,7 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 		err        error
 		file       *os.File
 		fileWriter io.Writer
+		headers    map[string]string
 		response   *http.Response
 		system     models.System
 		systems    []models.System
@@ -117,12 +118,16 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 		}
 
 		endpoint = fmt.Sprintf("%s/api/systems/%d/containers/sbom", config.Data.URL, system.ID)
-		response, err = emass.Post(system.ConfigProfile, endpoint, &body, writer.FormDataContentType())
+
+		headers = map[string]string{
+			"Content-Type": writer.FormDataContentType(),
+		}
+
+		response, err = emass.Post(system.ConfigProfile, endpoint, headers, &body)
 		if err != nil {
 			return err
 		}
 
-		// Print the response in the specified output format.
 		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err
@@ -132,7 +137,6 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Define flags for the "emu get container-sbom" subcommand.
 	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomSbomPath, "file", "f", "", "Filepath to container SBOM")
 	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomSbomFormat, "format", "", "", "Container SBOM format")
 	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomContainerName, "container-name", "", "", "Container name")

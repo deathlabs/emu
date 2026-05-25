@@ -28,7 +28,7 @@ import (
 var (
 	Cmd = &cobra.Command{
 		Use:   "test",
-		Short: "Test",
+		Short: "Test a function",
 	}
 )
 

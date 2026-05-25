@@ -54,6 +54,7 @@ func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
 		endpoint              string
 		err                   error
 		file                  *excelize.File
+		headers               map[string]string
 		jsonData              []byte
 		response              *http.Response
 		row                   []string
@@ -142,12 +143,16 @@ func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
 	// Loop through the filtered systems and upload a software baseline to each one.
 	for _, system = range systems {
 		endpoint = fmt.Sprintf("%s/api/systems/%d/sw-baseline", config.Data.URL, system.ID)
-		response, err = emass.Post(system.ConfigProfile, endpoint, body, "application/json")
+
+		headers = map[string]string{
+			"Content-Type": "application/json",
+		}
+
+		response, err = emass.Post(system.ConfigProfile, endpoint, headers, body)
 		if err != nil {
 			return err
 		}
 
-		// Print the response in the specified output format.
 		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err
@@ -158,6 +163,5 @@ func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Define flags for the "emu upload software-baseline" subcommand.
 	uploadSoftwareBaselineCmd.PersistentFlags().StringVarP(&softwareBaselinePath, "file", "f", "", "File path to the software baseline")
 }

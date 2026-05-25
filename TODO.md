@@ -5,8 +5,15 @@
 - [x] Add params to test results
 - [x] Add get function for software baseline
 - [x] Add get function for ports, protocols, and services
-- [x] Add upload function for container SBOMs
+- [x] Add get function for test connection
+- [x] Add post function for container SBOMs
+- [x] Add post function for artifacts
 - [ ] Add argument checks for upload container SBOM function
+- [ ] Add post function for application SBOMs
+- [ ] Add post function for static-code-scans
+- [ ] Add post function for device-scan-results
+- [ ] Add post function for container-scan-results
+- [ ] Add post function for cloud-resource-results
 - [ ] Add get function for POA&Ms
 - [ ] Add get function for milestones
 - [ ] Add get function for hardware baseline
@@ -20,7 +27,5 @@
 - [ ] Add get function for CMMC assessments
 - [ ] Add get function for CMMC SPRS ingest status
 - [ ] Add get function for dashboards
-- [ ] Add get function for test connection
-- [ ] Add upload function for application SBOMs
 - [ ] Ensure output format in config file is used
 - [ ] Make the "systems" key in the config file optional
