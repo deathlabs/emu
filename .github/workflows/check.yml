@@ -80,10 +80,10 @@ jobs:
       - name: Run Syft
         uses: anchore/sbom-action@v0
         with:
-          path: ${{ matrix.container }}
+          path: .
           format: cyclonedx-json
-          output-file: ${{ matrix.container }}-sbom.json
-          artifact-name: ${{ matrix.container }}-sbom.json
+          output-file: emu-sbom.json
+          artifact-name: emu-sbom.json
       - name: Run Grype
         id: grype
         uses: anchore/scan-action@v7.4.0
