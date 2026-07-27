@@ -4,23 +4,20 @@ on:
   push:
     branches:
       - '**'
+  workflow_dispatch:
+    inputs:
+      sbom_scan_failure_threshold:
+        description: "Threshold to fail the SBOM scan."
+        type: choice
+        options: [low, high, critical]
+        default: low
+  schedule:
+    - cron: '00 12 * * *'
 
 permissions:
   contents: read
 
 jobs:
-  lint:
-    name: Lint Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-      - name: Install Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: '1.26.2'
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v9
 
   secrets:
     name: Secrets Scan
@@ -33,16 +30,42 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         continue-on-error: false
 
+  code-lint:
+    name: Code Lint Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Install Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.2'
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v9.3.0
+        args: --output.sarif.path emu-lint-scan.sarif
+      - name: Print Code Lint Scan
+        if: always()
+        run: cat emu-lint-scan.sarif
+
   sast:
     name: SAST Scan
     runs-on: ubuntu-latest
     container:
       image: semgrep/semgrep
     steps:
-      - name: Clone the repository
-        uses: actions/checkout@v6
+      - name: Clone Repository
+        uses: actions/checkout@v7
       - name: Run Semgrep
-        run: semgrep scan --config auto .
+        run: semgrep scan --config auto . --sarif --sarif-output=emu-sast-scan.sarif
+      - name: Print SAST Scan
+        if: always()
+        run: cat emu-sast-scan.sarif
+      - name: Upload SAST Scan
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          path: emu-sast-scan.sarif
+          archive: false
 
   sca:
     name: SBOM Scan
@@ -51,15 +74,38 @@ jobs:
       actions: read
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - name: Clone Repository
+        uses: actions/checkout@v6
       - name: Run Syft
         uses: anchore/sbom-action@v0
         with:
-          path: .
-          output-file: sbom.json
-          artifact-name: sbom
+          path: ${{ matrix.container }}
+          format: cyclonedx-json
+          output-file: ${{ matrix.container }}-sbom.json
+          artifact-name: ${{ matrix.container }}-sbom.json
       - name: Run Grype
-        uses: anchore/scan-action@v7
+        id: grype
+        uses: anchore/scan-action@v7.4.0
         with:
-          sbom: sbom.json
-          severity-cutoff: high
+          sbom: emu-sbom.json
+          vex: ${{ hashFiles('.github/vex/emu-vex.json') != '' && '.github/vex/emu-vex.json' || '' }}
+          severity-cutoff: ${{ github.event.inputs.sbom_scan_failure_threshold || 'low' }}
+          output-format: cyclonedx-json
+          output-file: emu-sbom-scan.json
+          fail-build: true
+      - name: Print SBOM Scan
+        if: always()
+        run: jq -r '
+            (.vulnerabilities // [])[] |
+            [
+              ((.ratings[]? | select(.severity != null) | .severity) // "unknown"),
+              .id,
+              (try ((.affects[0].ref // "") | capture("pkg:(?<pkg>[^?]+)").pkg) catch "unknown")
+            ] | @tsv
+          ' emu-sbom-scan.json | sort | column -t
+      - name: Upload SBOM Scan
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          path: emu-sbom-scan.json
+          archive: false
