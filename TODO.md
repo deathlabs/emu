@@ -8,6 +8,8 @@
 - [x] Add get function for test connection
 - [x] Add post function for container SBOMs
 - [x] Add post function for artifacts
+- [x] Add get function for devices
+- [x] Add get function for device scan results
 - [ ] Add argument checks for upload container SBOM function
 - [ ] Add post function for application SBOMs
 - [ ] Add post function for static-code-scans
@@ -17,11 +19,9 @@
 - [ ] Add get function for POA&Ms
 - [ ] Add get function for milestones
 - [ ] Add get function for hardware baseline
-- [ ] Add get function for device scan results
 - [ ] Add get function for cloud resource results
 - [ ] Add get function for container scan results
 - [ ] Add get function for static code scans
-- [ ] Add get function for bill of materials
 - [ ] Add get function for workflow definitions
 - [ ] Add get function for workflow instances
 - [ ] Add get function for CMMC assessments

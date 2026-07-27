@@ -66,14 +66,11 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 		writer     *multipart.Writer
 	)
 
-	// Filter systems based on system IDs provided via the root-level --system-ids flag.
-	// If no system IDs are provided, this will return all systems for the active profile.
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
 
-	// Loop through the filtered systems and upload a container SBOM to each one.
 	for _, system = range systems {
 		writer = multipart.NewWriter(&body)
 

@@ -1,14 +1,22 @@
 # Changelog
 
-All notable changes to EMU will be documented in this file.
-
-## [4.0.3] - 2026-05-25
+## [4.0.3] - 2026-07-27
 ### Added
-- Added `emass upload device-scan`
+- Added `emu get applications`
+- Added `emu get containers`
+- Added `emu get container-scan-results`
+- Added `emu get devices`
+- Added `emu get device-scan-results`
+- Added `emu get static-code-scans`
+- Added `emu upload device-scan`
+
+### Removed
+- Removed `user-uid` header from HTTP GET requests
+- Removed comments that weren't adding value
 
 ## [4.0.2] - 2026-05-24
 ### Added
-- Added `emass upload artifact`
+- Added `emu upload artifact`
 
 ### Changed
 - Converted the `contentType` parameter into a map-based `headers` parameter in the `emass.POST` function

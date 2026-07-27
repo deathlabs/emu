@@ -29,18 +29,19 @@ import (
 	"github.com/deathlabs/emu/v4/models"
 )
 
+// getHTTPStatusCodeDescription returns a human-readable description for the HTTP response given.
 func getHTTPStatusCodeDescription(response *http.Response) string {
 	switch response.StatusCode {
 	case 200:
 		return "request succeeded (applicable to partial successes and the response body depends on the request method)"
 	case 201:
-		return "request was fulfilled and resulted in one or more new resources being successfully created on the server."
+		return "request was fulfilled and resulted in one or more new resources being successfully created on the server"
 	case 400:
-		return "request could not be understood by the server due to incorrect syntax or an unexpected format."
+		return "request could not be understood by the server due to incorrect syntax or an unexpected format"
 	case 401:
-		return "request failed to provide suitable authentication"
+		return "request failed to provide a valid API key or certificate and API key combination"
 	case 403:
-		return "request was blocked due to a lack of client permissions for the API or to a specific API endpoint"
+		return "request failed to provide a trusted certificate for the API endpoint specified"
 	case 404:
 		return "request failed because the URL provided did not match any available API endpoints"
 	case 405:
@@ -56,7 +57,7 @@ func getHTTPStatusCodeDescription(response *http.Response) string {
 	}
 }
 
-// Get sends an HTTP GET request using the endpoint and profile specified and returns the HTTP response.
+// Get sends an HTTP GET request and returns the HTTP response.
 func Get(profile models.ConfigProfile, endpoint string) (*http.Response, error) {
 	var (
 		client   *http.Client
@@ -80,7 +81,6 @@ func Get(profile models.ConfigProfile, endpoint string) (*http.Response, error) 
 	// Set the headers required for the HTTP request.
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("api-key", profile.APIKey)
-	request.Header.Set("user-uid", profile.UserUID)
 
 	// Send the HTTP request.
 	response, err = client.Do(request)
@@ -90,14 +90,14 @@ func Get(profile models.ConfigProfile, endpoint string) (*http.Response, error) 
 
 	// Check the HTTP response status code.
 	if response.StatusCode != 200 && response.StatusCode != 201 {
-		return nil, fmt.Errorf("HTTP status code %d: %s", response.StatusCode, getHTTPStatusCodeDescription(response))
+		return nil, fmt.Errorf("%s (HTTP Status Code %d)", getHTTPStatusCodeDescription(response), response.StatusCode)
 	}
 
 	// Return the HTTP response.
 	return response, nil
 }
 
-// Post sends an HTTP POST request using the endpoint, profile, and body specified and returns the HTTP response.
+// Post sends an HTTP POST request and returns the HTTP response.
 func Post(profile models.ConfigProfile, endpoint string, headers map[string]string, body *bytes.Buffer) (*http.Response, error) {
 	var (
 		client             *http.Client

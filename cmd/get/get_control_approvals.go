@@ -62,16 +62,13 @@ func getControlApprovals(cmd *cobra.Command, args []string) error {
 		params.Set("controlAcronyms", strings.Join(controlApprovalsControlAcronyms, ","))
 	}
 
-	// Filter systems based on system IDs provided via the root-level --system-ids flag.
-	// If no system IDs are provided, this will return all systems for the active profile.
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
 
-	// Loop through the filtered systems and get approvals data for each one.
 	for _, system = range systems {
-		// Define the endpoint for getting approvals data for the current system.
+
 		endpoint = fmt.Sprintf("%s/api/systems/%d/approval/cac", config.Data.URL, system.ID)
 
 		if len(params) > 0 {
@@ -83,7 +80,6 @@ func getControlApprovals(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		// Print the response in the specified output format.
 		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err
@@ -94,6 +90,5 @@ func getControlApprovals(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Define flags for the "emu get control-approvals" subcommand.
 	getControlApprovalsCmd.PersistentFlags().StringSliceVarP(&controlApprovalsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
 }

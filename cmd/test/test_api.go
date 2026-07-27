@@ -49,14 +49,11 @@ func testAPI(cmd *cobra.Command, args []string) error {
 		systems  []models.System
 	)
 
-	// Filter systems based on system IDs provided via the root-level --system-ids flag.
-	// If no system IDs are provided, this will return all systems for the active profile.
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
 
-	// Loop through the filtered systems and upload a container SBOM to each one.
 	for _, system = range systems {
 		endpoint = fmt.Sprintf("%s/api", config.Data.URL)
 		response, err = emass.Get(system.ConfigProfile, endpoint)
@@ -64,7 +61,6 @@ func testAPI(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		// Print the response in the specified output format.
 		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err

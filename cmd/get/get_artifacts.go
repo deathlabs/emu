@@ -82,16 +82,13 @@ func getArtifacts(cmd *cobra.Command, args []string) error {
 		params.Set("systemOnly", "true")
 	}
 
-	// Filter systems based on system IDs provided via the root-level --system-ids flag.
-	// If no system IDs are provided, this will return all systems for the active profile.
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
 
-	// Loop through the filtered systems and get artifacts data for each one.
 	for _, system = range systems {
-		// Define the endpoint for getting artifacts data for the current system.
+
 		endpoint = fmt.Sprintf("%s/api/systems/%d/artifacts", config.Data.URL, system.ID)
 
 		if len(params) > 0 {
@@ -103,7 +100,6 @@ func getArtifacts(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		// Print the response in the specified output format.
 		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err
@@ -114,7 +110,6 @@ func getArtifacts(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Define flags for the "emu get artifacts" subcommand.
 	getArtifactsCmd.PersistentFlags().StringVarP(&artifactsFilename, "filename", "f", "", "Filename")
 	getArtifactsCmd.PersistentFlags().StringSliceVarP(&artifactsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
 	getArtifactsCmd.PersistentFlags().StringSliceVarP(&artifactsAssessmentProcedures, "assessment-procedures", "", []string{}, "Assessment procedures")

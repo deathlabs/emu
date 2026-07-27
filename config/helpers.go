@@ -18,6 +18,7 @@ func ContainsSystemID(ids []int, id int) bool {
 	return false
 }
 
+// FilterProfiles filters profiles based on the profile name provided via the root-level --profile flag.
 func FilterProfiles(config models.Config, activeProfileName string) ([]models.ConfigProfile, error) {
 	var (
 		profile  models.ConfigProfile
@@ -40,6 +41,7 @@ func FilterProfiles(config models.Config, activeProfileName string) ([]models.Co
 	return nil, fmt.Errorf("no profile found for name %s", activeProfileName)
 }
 
+// FilterSystems filters systems based on system IDs provided via the root-level --system-ids flag. If no system IDs are provided, this will return all systems for the active profile.
 func FilterSystems(config models.Config, profileName string, systemIDs []int) ([]models.System, error) {
 	var (
 		filteredSystems []models.System

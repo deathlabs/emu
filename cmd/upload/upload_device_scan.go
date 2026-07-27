@@ -69,8 +69,6 @@ func uploadDeviceScan(cmd *cobra.Command, args []string) error {
 		writer          *multipart.Writer
 	)
 
-	// Filter systems based on system IDs provided via the root-level --system-ids flag.
-	// If no system IDs are provided, this will return all systems for the active profile.
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
@@ -84,7 +82,6 @@ func uploadDeviceScan(cmd *cobra.Command, args []string) error {
 		return errors.New("an argument for the 'device-scan-type' parameter is required")
 	}
 
-	// Loop through the filtered systems and upload a container SBOM to each one.
 	for _, system = range systems {
 		writer = multipart.NewWriter(&body)
 
@@ -138,5 +135,5 @@ func uploadDeviceScan(cmd *cobra.Command, args []string) error {
 func init() {
 	uploadDeviceScanCmd.PersistentFlags().StringVarP(&deviceScanPath, "file", "f", "", "File path to the device scan")
 	uploadDeviceScanCmd.PersistentFlags().VarP(&deviceScanType, "device-scan-type", "t", "Device scan type (acasAsrArf | acasConsolidatedArf | acasNessus | disaStigViewerCklCklb | disaStigViewerCmrs | policyAuditor | scapComplianceChecker)")
-	uploadDeviceScanCmd.PersistentFlags().BoolVarP(&deviceScanIsBaseline, "is-baseline", "", false, "Utilize this parameter if the imported file represents a baseline scan that includes all findings and results. Importing as a baseline scan, which assumes a common set of scan policies are used when conducting a scan, will replace a device's findings for a specific Benchmark.")
+	uploadDeviceScanCmd.PersistentFlags().BoolVarP(&deviceScanIsBaseline, "is-baseline", "", false, "Utilize this parameter if the imported file represents a baseline scan that includes all findings and results. Importing as a baseline scan, which assumes a common set of scan policies are used when conducting a scan, will replace a device's findings for a specific benchmark.")
 }
