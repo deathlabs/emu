@@ -33,11 +33,17 @@ var (
 )
 
 func init() {
+	Cmd.AddCommand(getApplicationsCmd)
 	Cmd.AddCommand(getArtifactsCmd)
 	Cmd.AddCommand(getConfigCmd)
+	Cmd.AddCommand(getContainersCmd)
+	Cmd.AddCommand(getContainerScanResultsCmd)
 	Cmd.AddCommand(getControlsCmd)
 	Cmd.AddCommand(getControlApprovalsCmd)
+	Cmd.AddCommand(getDevicesCmd)
+	Cmd.AddCommand(getDeviceScanResultsCmd)
 	Cmd.AddCommand(getPpsCmd)
+	Cmd.AddCommand(getStaticCodeScansCmd)
 	Cmd.AddCommand(getSystemsCmd)
 	Cmd.AddCommand(getSystemRolesCmd)
 	Cmd.AddCommand(getTestResultsCmd)

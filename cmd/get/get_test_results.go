@@ -59,24 +59,17 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 		response *http.Response
 	)
 
-	// Filter systems based on system IDs provided via the root-level --system-ids flag.
-	// If no system IDs are provided, this will return all systems for the active profile.
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
 
-	// Loop through the filtered systems and get approvals data for each one.
 	for _, system = range systems {
-		// Define the endpoint for getting approvals data for the current system.
+
 		endpoint = fmt.Sprintf("%s/api/systems/%d/test-results", config.Data.URL, system.ID)
 
-		// If control IDs or assessment procedures are specified via the --control-ids
-		// and --assessment-procedures flags, add them as query parameters.
 		params = url.Values{}
 
-		// If assessment procedures are specified via the --assessment-procedures flag,
-		// add them as a query parameter.
 		if len(resultsAssessmentProcedures) != 0 {
 			params.Set("assessmentProcedures", strings.Join(resultsAssessmentProcedures, ","))
 		}
@@ -85,8 +78,6 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 			params.Set("ccis", strings.Join(resultsCcis, ","))
 		}
 
-		// If control IDs are specified via the --control-ids flag,
-		// add them as a query parameter.
 		if len(resultsControlAcronyms) != 0 {
 			params.Set("acronyms", strings.Join(resultsControlAcronyms, ","))
 		}
@@ -95,18 +86,15 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 			params.Set("latestOnly", "true")
 		}
 
-		// If query parameters are set, add them to the endpoint.
 		if len(params) > 0 {
 			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
 		}
 
-		// Make the request for test results data.
 		response, err = emass.Get(system.ConfigProfile, endpoint)
 		if err != nil {
 			return err
 		}
 
-		// Print the response in the specified output format.
 		err = output.Response(response, config.OutputFormat)
 		if err != nil {
 			return err
@@ -117,7 +105,6 @@ func getTestResults(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Define flags for the "emu get test-results" subcommand.
 	getTestResultsCmd.PersistentFlags().StringSliceVarP(&resultsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
 	getTestResultsCmd.PersistentFlags().StringSliceVarP(&resultsAssessmentProcedures, "assessment-procedures", "", []string{}, "Assessment procedures")
 	getTestResultsCmd.PersistentFlags().StringSliceVarP(&resultsCcis, "ccis", "", []string{}, "CCIs")

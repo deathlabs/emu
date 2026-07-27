@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/deathlabs/emu/v4/config"
 	"github.com/deathlabs/emu/v4/emass"
@@ -33,59 +34,60 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	rolesCategory string
-	rolesRole     string
-	rolesPolicy   string
+const (
+	devicesPageIndexDefault = 0
+	devicesPageSizeDefault  = 20000
 )
 
 var (
-	getSystemRolesCmd = &cobra.Command{
-		Use:   "system-roles",
-		Short: "Get data about system roles",
-		RunE:  getSystemRoles,
+	devicesPageIndex int
+	devicesPageSize  int
+)
+
+var (
+	getDevicesCmd = &cobra.Command{
+		Use:   "devices",
+		Short: "Get data about devices",
+		RunE:  getDevices,
 	}
 )
 
-func getSystemRoles(cmd *cobra.Command, args []string) error {
+func getDevices(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
-		response *http.Response
 		params   url.Values
-		profile  models.ConfigProfile
-		profiles []models.ConfigProfile
+		response *http.Response
+		system   models.System
+		systems  []models.System
 	)
 
-	profiles, err = config.FilterProfiles(config.Data, config.ActiveProfileName)
+	params = url.Values{}
+
+	if devicesPageIndex != devicesPageIndexDefault {
+		params.Set("pageIndex", strconv.Itoa(devicesPageIndex))
+	}
+
+	if devicesPageSize != devicesPageSizeDefault {
+		if devicesPageSize > 20000 {
+			return fmt.Errorf("the Page Size cannot exceed %d", devicesPageIndexDefault)
+		}
+		params.Set("pageSize", strconv.Itoa(devicesPageSize))
+	}
+
+	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
 
-	for _, profile = range profiles {
+	for _, system = range systems {
+		endpoint = fmt.Sprintf("%s/api/systems/%d/devices", config.Data.URL, system.ID)
 
-		endpoint = fmt.Sprintf("%s/api/system-roles", config.Data.URL)
-
-		if rolesCategory != "" {
-
-			if rolesRole == "" {
-				return fmt.Errorf("profile %s: a category and role are required", profile.Name)
-			}
-
-			endpoint = fmt.Sprintf("%s/%s", endpoint, rolesCategory)
-
-			params = url.Values{}
-			params.Set("role", rolesRole)
-			if rolesPolicy != "" {
-				params.Set("policy", rolesPolicy)
-			}
-
-			if len(params) > 0 {
-				endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
-			}
+		if len(params) > 0 {
+			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
 		}
 
-		response, err = emass.Get(profile, endpoint)
+		response, err = emass.Get(system.ConfigProfile, endpoint)
 		if err != nil {
 			return err
 		}
@@ -100,7 +102,6 @@ func getSystemRoles(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	getSystemRolesCmd.Flags().StringVarP(&rolesCategory, "category", "", "", "PAC, CAC, or Other")
-	getSystemRolesCmd.Flags().StringVarP(&rolesRole, "role", "", "", "ISO, ISSM, SCA, Auditor, AO, etc. (required if --category is used)")
-	getSystemRolesCmd.Flags().StringVarP(&rolesPolicy, "policy", "", "", "RMF, DIACAP, or Reporting")
+	getDevicesCmd.PersistentFlags().IntVarP(&devicesPageIndex, "page-index", "", devicesPageIndexDefault, "Page index")
+	getDevicesCmd.PersistentFlags().IntVarP(&devicesPageSize, "page-size", "", devicesPageSizeDefault, "Page size")
 }

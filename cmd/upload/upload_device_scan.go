@@ -23,12 +23,15 @@ package upload
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/deathlabs/emu/v4/config"
 	"github.com/deathlabs/emu/v4/emass"
@@ -38,32 +41,32 @@ import (
 )
 
 var (
-	containerSbomContainerIdentifier string
-	containerSbomContainerName       string
-	containerSbomSbomPath            string
-	containerSbomSbomFormat          string
+	deviceScanPath       string
+	deviceScanType       models.DeviceScanType
+	deviceScanIsBaseline bool
 )
 
 var (
-	uploadContainerSBOMCmd = &cobra.Command{
-		Use:   "container-sbom",
-		Short: "Upload an container sbom to eMASS",
-		RunE:  uploadContainerSBOM,
+	uploadDeviceScanCmd = &cobra.Command{
+		Use:   "device-scan",
+		Short: "Upload a device scan to eMASS",
+		RunE:  uploadDeviceScan,
 	}
 )
 
-func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
+func uploadDeviceScan(cmd *cobra.Command, args []string) error {
 	var (
-		body       bytes.Buffer
-		endpoint   string
-		err        error
-		file       *os.File
-		fileWriter io.Writer
-		headers    map[string]string
-		response   *http.Response
-		system     models.System
-		systems    []models.System
-		writer     *multipart.Writer
+		body            bytes.Buffer
+		endpoint        string
+		err             error
+		file            *os.File
+		fileWriter      io.Writer
+		headers         map[string]string
+		queryParameters url.Values
+		response        *http.Response
+		system          models.System
+		systems         []models.System
+		writer          *multipart.Writer
 	)
 
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
@@ -71,15 +74,23 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	if deviceScanPath == "" {
+		return errors.New("an argument for the 'file' parameter is required")
+	}
+
+	if deviceScanType == "" {
+		return errors.New("an argument for the 'device-scan-type' parameter is required")
+	}
+
 	for _, system = range systems {
 		writer = multipart.NewWriter(&body)
 
-		fileWriter, err = writer.CreateFormFile("file", filepath.Base(containerSbomSbomPath))
+		fileWriter, err = writer.CreateFormFile("file", filepath.Base(deviceScanPath))
 		if err != nil {
 			return err
 		}
 
-		file, err = os.Open(containerSbomSbomPath)
+		file, err = os.Open(deviceScanPath)
 		if err != nil {
 			return err
 		}
@@ -94,27 +105,15 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		err = writer.WriteField("containerName", containerSbomContainerName)
-		if err != nil {
-			return err
-		}
-
-		err = writer.WriteField("containerIdentifier", containerSbomContainerIdentifier)
-		if err != nil {
-			return err
-		}
-
-		err = writer.WriteField("format", containerSbomSbomFormat)
-		if err != nil {
-			return err
-		}
-
 		err = writer.Close()
 		if err != nil {
 			return err
 		}
 
-		endpoint = fmt.Sprintf("%s/api/systems/%d/containers/sbom", config.Data.URL, system.ID)
+		queryParameters = url.Values{}
+		queryParameters.Set("scanType", string(deviceScanType))
+		queryParameters.Set("isBaseline", strconv.FormatBool(deviceScanIsBaseline))
+		endpoint = fmt.Sprintf("%s/api/systems/%d/device-scan-results?%s", config.Data.URL, system.ID, queryParameters.Encode())
 
 		headers = map[string]string{
 			"Content-Type": writer.FormDataContentType(),
@@ -134,8 +133,7 @@ func uploadContainerSBOM(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomSbomPath, "file", "f", "", "Filepath to container SBOM")
-	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomSbomFormat, "format", "", "", "Container SBOM format")
-	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomContainerName, "container-name", "", "", "Container name")
-	uploadContainerSBOMCmd.PersistentFlags().StringVarP(&containerSbomContainerIdentifier, "container-id", "", "", "Container ID (e.g., tag)")
+	uploadDeviceScanCmd.PersistentFlags().StringVarP(&deviceScanPath, "file", "f", "", "File path to the device scan")
+	uploadDeviceScanCmd.PersistentFlags().VarP(&deviceScanType, "device-scan-type", "t", "Device scan type (acasAsrArf | acasConsolidatedArf | acasNessus | disaStigViewerCklCklb | disaStigViewerCmrs | policyAuditor | scapComplianceChecker)")
+	uploadDeviceScanCmd.PersistentFlags().BoolVarP(&deviceScanIsBaseline, "is-baseline", "", false, "Utilize this parameter if the imported file represents a baseline scan that includes all findings and results. Importing as a baseline scan, which assumes a common set of scan policies are used when conducting a scan, will replace a device's findings for a specific benchmark.")
 }

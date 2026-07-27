@@ -39,3 +39,4 @@ sbom.json
 *.xlsm
 demo.md
 demo.ipynb
+*.nessus

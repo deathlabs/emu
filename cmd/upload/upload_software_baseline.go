@@ -126,21 +126,17 @@ func uploadSoftwareBaseline(cmd *cobra.Command, args []string) error {
 		softwareBaseline = append(softwareBaseline, softwareBaselineEntry)
 	}
 
-	// Convert the software baseline to JSON and then a sequence of bytes.
 	jsonData, err = json.Marshal(softwareBaseline)
 	if err != nil {
 		return err
 	}
 	body = bytes.NewBuffer(jsonData)
 
-	// Filter systems based on system IDs provided via the root-level --system-ids flag.
-	// If no system IDs are provided, this will return all systems for the active profile.
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
 	}
 
-	// Loop through the filtered systems and upload a software baseline to each one.
 	for _, system = range systems {
 		endpoint = fmt.Sprintf("%s/api/systems/%d/sw-baseline", config.Data.URL, system.ID)
 

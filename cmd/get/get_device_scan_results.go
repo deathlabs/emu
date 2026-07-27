@@ -25,7 +25,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
+	"strconv"
 
 	"github.com/deathlabs/emu/v4/config"
 	"github.com/deathlabs/emu/v4/emass"
@@ -34,27 +34,46 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	controlsControlAcronyms []string
+const (
+	deviceScanResultsPageIndexDefault = 0
+	deviceScanResultsPageSizeDefault  = 20000
 )
 
 var (
-	getControlsCmd = &cobra.Command{
-		Use:   "controls",
-		Short: "Get data about controls",
-		RunE:  getControls,
+	deviceScanResultsPageIndex int
+	deviceScanResultsPageSize  int
+)
+
+var (
+	getDeviceScanResultsCmd = &cobra.Command{
+		Use:   "device-scan-results",
+		Short: "Get data about device scan results",
+		RunE:  getDeviceScanResults,
 	}
 )
 
-func getControls(cmd *cobra.Command, args []string) error {
+func getDeviceScanResults(cmd *cobra.Command, args []string) error {
 	var (
 		endpoint string
 		err      error
-		response *http.Response
 		params   url.Values
+		response *http.Response
 		system   models.System
 		systems  []models.System
 	)
+
+	params = url.Values{}
+
+	if deviceScanResultsPageIndex != deviceScanResultsPageIndexDefault {
+		params.Set("pageIndex", strconv.Itoa(deviceScanResultsPageIndex))
+	}
+
+	if deviceScanResultsPageSize != deviceScanResultsPageSizeDefault {
+		if deviceScanResultsPageSize > 20000 {
+			return fmt.Errorf("the Page Size cannot exceed %d", deviceScanResultsPageIndexDefault)
+		}
+		params.Set("pageSize", strconv.Itoa(deviceScanResultsPageSize))
+	}
 
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
@@ -62,12 +81,8 @@ func getControls(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, system = range systems {
+		endpoint = fmt.Sprintf("%s/api/systems/%d/device-scan-results", config.Data.URL, system.ID)
 
-		endpoint = fmt.Sprintf("%s/api/systems/%d/controls", config.Data.URL, system.ID)
-
-		params = url.Values{}
-
-		params.Set("acronyms", strings.Join(controlsControlAcronyms, ","))
 		if len(params) > 0 {
 			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
 		}
@@ -87,5 +102,6 @@ func getControls(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	getControlsCmd.PersistentFlags().StringSliceVarP(&controlsControlAcronyms, "control-acronyms", "", []string{}, "Control acronyms")
+	getDeviceScanResultsCmd.PersistentFlags().IntVarP(&deviceScanResultsPageIndex, "page-index", "", deviceScanResultsPageIndexDefault, "Page index")
+	getDeviceScanResultsCmd.PersistentFlags().IntVarP(&deviceScanResultsPageSize, "page-size", "", deviceScanResultsPageSizeDefault, "Page size")
 }

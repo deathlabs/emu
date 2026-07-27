@@ -68,8 +68,6 @@ func uploadArtifact(cmd *cobra.Command, args []string) error {
 		writer          *multipart.Writer
 	)
 
-	// Filter systems based on system IDs provided via the root-level --system-ids flag.
-	// If no system IDs are provided, this will return all systems for the active profile.
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
 		return err
@@ -79,7 +77,6 @@ func uploadArtifact(cmd *cobra.Command, args []string) error {
 		return errors.New("an argument for the 'file' parameter is required")
 	}
 
-	// Loop through the filtered systems and upload an artifact to each one.
 	for _, system = range systems {
 		writer = multipart.NewWriter(&body)
 

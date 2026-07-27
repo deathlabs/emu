@@ -93,59 +93,51 @@ func getSystems(cmd *cobra.Command, args []string) error {
 		params.Set("reportsForScorecard", "true")
 	}
 
-	// If system IDs are provided via the root-level --system-ids flag, use them to filter systems.
-	// Otherwise, filter profiles based on the active profile name and get all systems for those profiles.
 	if len(config.SystemIDs) != 0 {
-		// Filter systems based on system IDs provided via the root-level --system-ids flag.
-		// If no system IDs are provided, this will return all systems for the active profile.
+
 		systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 		if err != nil {
 			return err
 		}
 
 		for _, system = range systems {
-			// Define the endpoint for getting systems data for the current system.
+
 			endpoint = fmt.Sprintf("%s/api/systems/%d", config.Data.URL, system.ID)
 
 			if len(params) > 0 {
 				endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
 			}
 
-			// Make the request for systems data.
 			response, err = emass.Get(system.ConfigProfile, endpoint)
 			if err != nil {
 				return err
 			}
 
-			// Print the response in the specified output format.
 			err = output.Response(response, config.OutputFormat)
 			if err != nil {
 				return err
 			}
 		}
 	} else {
-		// Filter profiles based on the profile name provided via the root-level --profile flag.
+
 		profiles, err = config.FilterProfiles(config.Data, config.ActiveProfileName)
 		if err != nil {
 			return err
 		}
 
-		// Loop through the filtered profiles and get systems data for each one.
 		for _, profile = range profiles {
-			// Define the endpoint for getting systems data for the current profile.
+
 			endpoint = fmt.Sprintf("%s/api/systems", config.Data.URL)
 
 			if len(params) > 0 {
 				endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
 			}
 
-			// Make the request for systems data.
 			response, err = emass.Get(profile, endpoint)
 			if err != nil {
 				return err
 			}
 
-			// Print the response in the specified output format.
 			err = output.Response(response, config.OutputFormat)
 			if err != nil {
 				return err
@@ -157,7 +149,6 @@ func getSystems(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	// Define flags for the "emu get systems" subcommand.
 	getSystemsCmd.PersistentFlags().StringVarP(&systemsCoamsID, "coams-id", "", "", "COAMS ID")
 	getSystemsCmd.PersistentFlags().StringVarP(&systemsDitprID, "ditpr-id", "", "", "DITPR ID")
 	getSystemsCmd.PersistentFlags().BoolVarP(&systemsIncludeDecommissioned, "include-decommissioned", "", false, "Include decommissioned systems")

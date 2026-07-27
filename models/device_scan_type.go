@@ -19,22 +19,45 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package upload
+package models
 
 import (
-	"github.com/spf13/cobra"
+	"fmt"
+	"strings"
 )
 
-var (
-	Cmd = &cobra.Command{
-		Use:   "upload",
-		Short: "Upload data",
+type DeviceScanType string
+
+var deviceScanTypes = []string{
+	"acasAsrArf",
+	"acasConsolidatedArf",
+	"acasNessus",
+	"disaStigViewerCklCklb",
+	"disaStigViewerCmrs",
+	"policyAuditor",
+	"scapComplianceChecker",
+}
+
+func (deviceScanType *DeviceScanType) String() string {
+	return string(*deviceScanType)
+}
+
+func (deviceScanType *DeviceScanType) Set(value string) error {
+	var valid string
+
+	for _, valid = range deviceScanTypes {
+		if value == valid {
+			*deviceScanType = DeviceScanType(value)
+			return nil
+		}
 	}
-)
 
-func init() {
-	Cmd.AddCommand(uploadArtifactCmd)
-	Cmd.AddCommand(uploadContainerSBOMCmd)
-	Cmd.AddCommand(uploadDeviceScanCmd)
-	Cmd.AddCommand(uploadSoftwareBaselineCmd)
+	return fmt.Errorf(
+		"must be one of: %s",
+		strings.Join(deviceScanTypes, ", "),
+	)
+}
+
+func (deviceScanType *DeviceScanType) Type() string {
+	return "deviceScanType"
 }
