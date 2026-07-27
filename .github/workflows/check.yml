@@ -42,7 +42,8 @@ jobs:
           go-version: '1.26.2'
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v9.3.0
-        args: --output.sarif.path emu-lint-scan.sarif
+        with:
+          args: --output.sarif.path emu-lint-scan.sarif
       - name: Print Code Lint Scan
         if: always()
         run: cat emu-lint-scan.sarif
