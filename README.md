@@ -1,5 +1,5 @@
 # `emu`  
-[![CI Pipeline](https://github.com/deathlabs/emu/actions/workflows/check.yml/badge.svg)](https://github.com/deathlabs/emu/actions/workflows/check.yml)  
+[![CI Pipeline](https://github.com/deathlabs/emu/actions/workflows/ci.yml/badge.svg)](https://github.com/deathlabs/emu/actions/workflows/ci.yml) 
 The eMASS Updater (EMU) is a CLI tool for automating eMASS records management.
 
 ## Installation
