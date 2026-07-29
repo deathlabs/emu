@@ -12,10 +12,11 @@
 - [x] Add get function for device scan results
 - [x] Add get function for container scan results
 - [x] Add get function for static code scans
+- [x] Add get function for cloud resources
+- [ ] Add get function for cloud resource results
 - [ ] Add get function for POA&Ms
 - [ ] Add get function for milestones
 - [ ] Add get function for hardware baseline
-- [ ] Add get function for cloud resource results
 - [ ] Add get function for workflow definitions
 - [ ] Add get function for workflow instances
 - [ ] Add get function for CMMC assessments

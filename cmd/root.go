@@ -37,7 +37,7 @@ import (
 )
 
 const (
-	emuVersion   = "v4.0.0"
+	emuVersion   = "v4.0.4"
 	emassVersion = "v3.31.0"
 )
 

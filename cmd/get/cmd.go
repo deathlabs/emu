@@ -35,6 +35,7 @@ var (
 func init() {
 	Cmd.AddCommand(getApplicationsCmd)
 	Cmd.AddCommand(getArtifactsCmd)
+	Cmd.AddCommand(getCloudResourcesCmd)
 	Cmd.AddCommand(getConfigCmd)
 	Cmd.AddCommand(getContainersCmd)
 	Cmd.AddCommand(getContainerScanResultsCmd)

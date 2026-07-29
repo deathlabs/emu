@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.0.4] - 2026-07-28
+### Added
+- Added `emu get cloud-resources`
+
 ## [4.0.3] - 2026-07-27
 ### Added
 - Added `emu get applications`
@@ -38,6 +42,7 @@
 ### Changed
 - Migrated from v3 configuration format
 
+[4.0.4]: https://github.com/deathlabs/emu/releases/tag/v4.0.4
 [4.0.3]: https://github.com/deathlabs/emu/releases/tag/v4.0.3
 [4.0.2]: https://github.com/deathlabs/emu/releases/tag/v4.0.2
 [4.0.1]: https://github.com/deathlabs/emu/releases/tag/v4.0.1
