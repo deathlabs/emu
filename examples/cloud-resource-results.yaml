@@ -1,0 +1,22 @@
+---
+provider: azure
+resourceId: /subscriptions/123456789/sample/resource/namespace/default
+resourceName: Storage Resource
+resourceType: Microsoft.storage.table
+initiatedBy: john.doe.ctr@mail.mil
+cspAccountId: "123456789"
+cspRegion: useast2
+isBaseline: true
+tags:
+  test: testtag
+complianceResults:
+  - cspPolicyDefinitionId: /providers/sample/policy/namespace/au11_policy
+    policyDefinitionTitle: "AU-11 - Audit Record Retention"
+    complianceCheckTimestamp: 1644003780
+    isCompliant: false
+    control: AU-11
+    assessmentProcedure: "000167,000168"
+    complianceReason: retention period not configured
+    policyDeploymentName: testDeployment
+    policyDeploymentVersion: "1.0.0"
+    severity: High

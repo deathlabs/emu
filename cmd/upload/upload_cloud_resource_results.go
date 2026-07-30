@@ -5,75 +5,54 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/deathlabs/emu/v4/config"
 	"github.com/deathlabs/emu/v4/emass"
 	"github.com/deathlabs/emu/v4/models"
 	"github.com/deathlabs/emu/v4/output"
 	"github.com/spf13/cobra"
-)
-
-const (
-	cloudResourceResultsProviderDefault   = ""
-	cloudResourceResultsResourceIdDefault = ""
+	"go.yaml.in/yaml/v3"
 )
 
 var (
-	cloudResourceResultsProvider   string
-	cloudResourceResultsResourceId string
+	cloudResourceResultsPath string
 )
 
 var (
 	uploadCloudResourceResultsCmd = &cobra.Command{
 		Use:   "cloud-resource-results",
 		Short: "Upload cloud resource results",
-		RunE:  updateCloudResourceResults,
+		RunE:  uploadCloudResourceResults,
 	}
 )
 
-func updateCloudResourceResults(cmd *cobra.Command, args []string) error {
+func uploadCloudResourceResults(cmd *cobra.Command, args []string) error {
 	var (
-		endpoint        string
-		err             error
-		headers         map[string]string
-		request         *bytes.Buffer
-		requestBody     []byte
-		requestBodyData models.CloudResourceResult
-		response        *http.Response
-		system          models.System
-		systems         []models.System
+		cloudResourceResultsBytes []byte
+		endpoint                  string
+		err                       error
+		headers                   map[string]string
+		request                   *bytes.Buffer
+		requestBody               []byte
+		requestBodyData           models.CloudResourceResult
+		response                  *http.Response
+		system                    models.System
+		systems                   []models.System
 	)
 
 	headers = map[string]string{
 		"Content-Type": "application/json",
 	}
 
-	requestBodyData = models.CloudResourceResult{
-		Provider:     "azure",
-		ResourceId:   "/subscriptions/123456789/sample/resource/namespace/default",
-		ResourceName: "Storage Resource",
-		ResourceType: "Microsoft.storage.table",
-		InitiatedBy:  "john.doe.ctr@mail.mil",
-		CspAccountId: "123456789",
-		CspRegion:    "useast2",
-		IsBaseline:   true,
-		Tags: map[string]string{
-			"test": "testtag",
-		},
-		ComplianceResults: []models.ComplianceResult{
-			{
-				CspPolicyDefinitionId:    "/providers/sample/policy/namespace/au11_policy",
-				PolicyDefinitionTitle:    "AU-11 - Audit Record Retention",
-				ComplianceCheckTimestamp: 1644003780,
-				IsCompliant:              false,
-				Control:                  "AU-11",
-				AssessmentProcedure:      "000167,000168",
-				ComplianceReason:         "retention period not configured",
-				PolicyDeploymentName:     "testDeployment",
-				PolicyDeploymentVersion:  "1.0.0",
-				Severity:                 "High",
-			},
-		},
+	cloudResourceResultsBytes, err = os.ReadFile(cloudResourceResultsPath)
+	if err != nil {
+		panic(err)
+	}
+
+	err = yaml.Unmarshal(cloudResourceResultsBytes, &requestBodyData)
+	if err != nil {
+		return err
 	}
 
 	requestBody, err = json.Marshal([]models.CloudResourceResult{requestBodyData})
@@ -102,4 +81,8 @@ func updateCloudResourceResults(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+func init() {
+	uploadCloudResourceResultsCmd.PersistentFlags().StringVarP(&cloudResourceResultsPath, "file", "f", "", "File path to the cloud resource results")
 }
