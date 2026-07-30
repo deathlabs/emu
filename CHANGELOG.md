@@ -3,6 +3,7 @@
 ## [4.0.4] - 2026-07-28
 ### Added
 - Added `emu get cloud-resources`
+- Added `emu get cloud-resource-results`
 
 ## [4.0.3] - 2026-07-27
 ### Added
