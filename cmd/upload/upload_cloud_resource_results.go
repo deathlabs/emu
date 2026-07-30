@@ -1,9 +1,10 @@
 package upload
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/deathlabs/emu/v4/config"
 	"github.com/deathlabs/emu/v4/emass"
@@ -32,21 +33,52 @@ var (
 
 func updateCloudResourceResults(cmd *cobra.Command, args []string) error {
 	var (
-		endpoint string
-		err      error
-		params   url.Values
-		response *http.Response
-		system   models.System
-		systems  []models.System
+		endpoint        string
+		err             error
+		headers         map[string]string
+		request         *bytes.Buffer
+		requestBody     []byte
+		requestBodyData models.CloudResourceResult
+		response        *http.Response
+		system          models.System
+		systems         []models.System
 	)
 
-	params = url.Values{}
+	headers = map[string]string{
+		"Content-Type": "application/json",
+	}
 
-	if cloudResourceResultsProvider != cloudResourceResultsProviderDefault {
-		if len(cloudResourceResultsProvider) > 100 {
-			return fmt.Errorf("the Provider length cannot exceed %d characters", 100)
-		}
-		params.Set("provider", cloudResourceResultsProvider)
+	requestBodyData = models.CloudResourceResult{
+		Provider:     "azure",
+		ResourceId:   "/subscriptions/123456789/sample/resource/namespace/default",
+		ResourceName: "Storage Resource",
+		ResourceType: "Microsoft.storage.table",
+		InitiatedBy:  "john.doe.ctr@mail.mil",
+		CspAccountId: "123456789",
+		CspRegion:    "useast2",
+		IsBaseline:   true,
+		Tags: map[string]string{
+			"test": "testtag",
+		},
+		ComplianceResults: []models.ComplianceResult{
+			{
+				CspPolicyDefinitionId:    "/providers/sample/policy/namespace/au11_policy",
+				PolicyDefinitionTitle:    "AU-11 - Audit Record Retention",
+				ComplianceCheckTimestamp: 1644003780,
+				IsCompliant:              false,
+				Control:                  "AU-11",
+				AssessmentProcedure:      "000167,000168",
+				ComplianceReason:         "retention period not configured",
+				PolicyDeploymentName:     "testDeployment",
+				PolicyDeploymentVersion:  "1.0.0",
+				Severity:                 "High",
+			},
+		},
+	}
+
+	requestBody, err = json.Marshal([]models.CloudResourceResult{requestBodyData})
+	if err != nil {
+		return err
 	}
 
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
@@ -57,11 +89,8 @@ func updateCloudResourceResults(cmd *cobra.Command, args []string) error {
 	for _, system = range systems {
 		endpoint = fmt.Sprintf("%s/api/systems/%d/cloud-resource-results", config.Data.URL, system.ID)
 
-		if len(params) > 0 {
-			endpoint = fmt.Sprintf("%s?%s", endpoint, params.Encode())
-		}
-
-		response, err = emass.Post(system.ConfigProfile, endpoint, nil, nil)
+		request = bytes.NewBuffer(requestBody)
+		response, err = emass.Post(system.ConfigProfile, endpoint, headers, request)
 		if err != nil {
 			return err
 		}
