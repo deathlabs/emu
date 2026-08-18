@@ -56,6 +56,9 @@ func uploadCloudResourceResults(cmd *cobra.Command, args []string) error {
 	}
 
 	cloudResourceResultsJson, err = json.Marshal(cloudResourceResults)
+	if err != nil {
+		return err
+	}
 
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
