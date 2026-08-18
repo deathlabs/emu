@@ -1,22 +1,45 @@
 ---
-provider: azure
-resourceId: /subscriptions/123456789/sample/resource/namespace/default
-resourceName: Storage Resource
-resourceType: Microsoft.storage.table
-initiatedBy: john.doe.ctr@mail.mil
-cspAccountId: "123456789"
-cspRegion: useast2
-isBaseline: true
-tags:
-  test: testtag
-complianceResults:
-  - cspPolicyDefinitionId: /providers/sample/policy/namespace/au11_policy
-    policyDefinitionTitle: "AU-11 - Audit Record Retention"
-    complianceCheckTimestamp: 1644003780
-    isCompliant: false
-    control: AU-11
-    assessmentProcedure: "000167,000168"
-    complianceReason: retention period not configured
-    policyDeploymentName: testDeployment
-    policyDeploymentVersion: "1.0.0"
-    severity: High
+- cloud-resource-results:
+  resourceId: /subscriptions/123456789/sample/resource/namespace/default
+  provider: azure
+  resourceName: Storage Resource
+  resourceType: Microsoft.storage.table
+  initiatedBy: john.doe.ctr@mail.mil
+  cspAccountId: "123456789"
+  cspRegion: useast2
+  isBaseline: true
+  tags:
+    test: testtag
+  complianceResults:
+    - cspPolicyDefinitionId: /providers/sample/policy/namespace/au11_policy
+      policyDefinitionTitle: "AU-11 - Audit Record Retention"
+      complianceCheckTimestamp: 1644003780
+      isCompliant: false
+      control: AU-11
+      assessmentProcedure: "000167,000168"
+      complianceReason: retention period not configured
+      policyDeploymentName: testDeployment
+      policyDeploymentVersion: "1.0.0"
+      severity: High
+- cloud-resource-results:
+  resourceId: /subscriptions/d9f0aeb8-aa43-4c0c-9bc9-31502788ee65/resourcegroups/aaa-bbbb-c-d-eee/providers/microsoft.storage/storageaccounts/hurtlocker
+  provider: azure
+  resourceName: Storage Resource
+  resourceType: microsoft.storage/storageaccounts
+  initiatedBy: victor.fernandez19.mil@army.mil
+  cspAccountId: "987654321"
+  cspRegion: useast2
+  isBaseline: true
+  tags:
+    test: testtag
+  complianceResults:
+    - cspPolicyDefinitionId: /providers/Microsoft.Authorization/policyDefinitions/34c877ad-507e-4c82-993e-3452a6e0ad3c
+      policyDefinitionTitle: "Storage accounts should restrict network access"
+      complianceCheckTimestamp: 1644003780
+      isCompliant: false
+      control: AC-17
+      assessmentProcedure: "000167,000168"
+      complianceReason: retention period not configured
+      policyDeploymentName: testDeployment
+      policyDeploymentVersion: "1.0.0"
+      severity: High

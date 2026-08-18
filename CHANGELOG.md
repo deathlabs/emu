@@ -1,9 +1,10 @@
 # Changelog
 
-## [4.0.4] - 2026-07-28
+## [4.0.4] - 2026-08-18
 ### Added
 - Added `emu get cloud-resources`
 - Added `emu get cloud-resource-results`
+- Added `emu upload cloud-resource-results`
 
 ## [4.0.3] - 2026-07-27
 ### Added

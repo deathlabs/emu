@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	cloudResourceResultsPath string
+	cloudResourceResultsFilePath string
 )
 
 var (
@@ -29,36 +29,33 @@ var (
 
 func uploadCloudResourceResults(cmd *cobra.Command, args []string) error {
 	var (
-		cloudResourceResultsBytes []byte
-		endpoint                  string
-		err                       error
-		headers                   map[string]string
-		request                   *bytes.Buffer
-		requestBody               []byte
-		requestBodyData           models.CloudResourceResult
-		response                  *http.Response
-		system                    models.System
-		systems                   []models.System
+		cloudResourceResults     []models.CloudResourceResult
+		cloudResourceResultsFile []byte
+		cloudResourceResultsJson []byte
+		err                      error
+		endpoint                 string
+		headers                  map[string]string
+		request                  *bytes.Buffer
+		response                 *http.Response
+		system                   models.System
+		systems                  []models.System
 	)
 
 	headers = map[string]string{
 		"Content-Type": "application/json",
 	}
 
-	cloudResourceResultsBytes, err = os.ReadFile(cloudResourceResultsPath)
-	if err != nil {
-		panic(err)
-	}
-
-	err = yaml.Unmarshal(cloudResourceResultsBytes, &requestBodyData)
+	cloudResourceResultsFile, err = os.ReadFile(cloudResourceResultsFilePath)
 	if err != nil {
 		return err
 	}
 
-	requestBody, err = json.Marshal([]models.CloudResourceResult{requestBodyData})
+	err = yaml.Unmarshal(cloudResourceResultsFile, &cloudResourceResults)
 	if err != nil {
 		return err
 	}
+
+	cloudResourceResultsJson, err = json.Marshal(cloudResourceResults)
 
 	systems, err = config.FilterSystems(config.Data, config.ActiveProfileName, config.SystemIDs)
 	if err != nil {
@@ -68,7 +65,8 @@ func uploadCloudResourceResults(cmd *cobra.Command, args []string) error {
 	for _, system = range systems {
 		endpoint = fmt.Sprintf("%s/api/systems/%d/cloud-resource-results", config.Data.URL, system.ID)
 
-		request = bytes.NewBuffer(requestBody)
+		request = bytes.NewBuffer(cloudResourceResultsJson)
+
 		response, err = emass.Post(system.ConfigProfile, endpoint, headers, request)
 		if err != nil {
 			return err
@@ -84,5 +82,5 @@ func uploadCloudResourceResults(cmd *cobra.Command, args []string) error {
 }
 
 func init() {
-	uploadCloudResourceResultsCmd.PersistentFlags().StringVarP(&cloudResourceResultsPath, "file", "f", "", "File path to the cloud resource results")
+	uploadCloudResourceResultsCmd.PersistentFlags().StringVarP(&cloudResourceResultsFilePath, "file", "f", "", "File path to the cloud resource results")
 }
