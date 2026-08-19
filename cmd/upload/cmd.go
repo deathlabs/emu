@@ -16,5 +16,6 @@ func init() {
 	Cmd.AddCommand(uploadCloudResourceResultsCmd)
 	Cmd.AddCommand(uploadContainerSBOMCmd)
 	Cmd.AddCommand(uploadDeviceScanCmd)
+	Cmd.AddCommand(uploadPoamsCmd)
 	Cmd.AddCommand(uploadSoftwareBaselineCmd)
 }

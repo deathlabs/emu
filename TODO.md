@@ -13,10 +13,12 @@
 - [x] Add get function for container scan results
 - [x] Add get function for static code scans
 - [x] Add get function for cloud resources
-- [ ] Add post function for cloud resource results
-- [ ] Add get function for cloud resource results
-- [ ] Add get function for POA&Ms
+- [x] Add post function for cloud resource results
+- [x] Add get function for cloud resource results
+- [x] Add get function for POA&Ms
+- [x] Add post function for POA&Ms
 - [ ] Add get function for milestones
+- [ ] Add post function for milestones
 - [ ] Add get function for hardware baseline
 - [ ] Add get function for workflow definitions
 - [ ] Add get function for workflow instances
@@ -27,6 +29,8 @@
 - [ ] Add post function for static code scans
 - [ ] Add post function for device scan results
 - [ ] Add post function for container scan results
+- [ ] Add delete function for cloud resource results
+- [ ] Add delete function for container scan results
 - [ ] Add argument checks for upload container SBOM function
 - [ ] Ensure output format in config file is used
 - [ ] Make the "systems" key in the config file optional

@@ -1,0 +1,35 @@
+---
+- externalUid: External ID
+  controlAcronym: AC-2
+  assessmentProcedure: AC-2.1
+  severity: Low
+  rawSeverity: Low
+  status: Ongoing
+  scheduledCompletionDate: 1505915077
+  completionDate: null
+  pocOrganization: Army
+  pocLastName: Snow
+  pocFirstName: John
+  pocEmail: john.snow@server.com
+  pocPhoneNumber: (555) 555-5555
+  vulnerabilityDescription: Description text.
+  mitigations: Mitigation text.
+  comments: Comments text.
+  resources: Resources text.
+  identificationSource: 
+    - Access Control
+    - Audit Findings
+  identificationSourceDetails: Test Source
+  securityChecks: SV-222619r961863_rule, CVE-2026-21533
+  recommendations: Recommendations
+  relevanceOfThreat: High
+  likelihood: Moderate
+  impact: High
+  impactDescription: Impact description text.
+  residualRiskLevel: Moderate
+  milestones:
+    - description: Description text.
+      scheduledCompletionDate: 1505915077
+      status: Open
+      statusComments: Status comments
+      completionDate: null

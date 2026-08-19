@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.0.5] - 2026-08-19
+### Added
+- Added `emu get poams`
+- Added `emu upload poams`
+
+## Changed
+- The eMASS API guide version used for reference (not all functions were tested against the latest API version).
+
 ## [4.0.4] - 2026-08-18
 ### Added
 - Added `emu get cloud-resources`
