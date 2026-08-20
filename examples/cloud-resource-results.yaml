@@ -1,6 +1,5 @@
 ---
-- cloud-resource-results:
-  resourceId: /subscriptions/123456789/sample/resource/namespace/default
+- resourceId: /subscriptions/123456789/sample/resource/namespace/default
   provider: azure
   resourceName: Storage Resource
   resourceType: Microsoft.storage.table
@@ -21,8 +20,7 @@
       policyDeploymentName: testDeployment
       policyDeploymentVersion: "1.0.0"
       severity: High
-- cloud-resource-results:
-  resourceId: /subscriptions/d9f0aeb8-aa43-4c0c-9bc9-31502788ee65/resourcegroups/aaa-bbbb-c-d-eee/providers/microsoft.storage/storageaccounts/hurtlocker
+- resourceId: /subscriptions/d9f0aeb8-aa43-4c0c-9bc9-31502788ee65/resourcegroups/aaa-bbbb-c-d-eee/providers/microsoft.storage/storageaccounts/hurtlocker
   provider: azure
   resourceName: Storage Resource
   resourceType: microsoft.storage/storageaccounts

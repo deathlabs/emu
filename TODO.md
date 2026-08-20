@@ -9,24 +9,28 @@
 - [x] Add post function for container SBOMs
 - [x] Add post function for artifacts
 - [x] Add get function for devices
-- [x] Add get function for device scan results
-- [x] Add get function for container scan results
+- [x] Add get function for device scans
+- [x] Add post function for device scans
+- [x] Add get function for container scan
 - [x] Add get function for static code scans
+- [x] Add post function for static code scan
 - [x] Add get function for cloud resources
-- [ ] Add post function for cloud resource results
-- [ ] Add get function for cloud resource results
-- [ ] Add get function for POA&Ms
+- [x] Add get function for cloud resource scans
+- [x] Add post function for cloud resource scan
+- [x] Add get function for POA&Ms
+- [x] Add post function for POA&Ms
+- [ ] Add post function for container scan
 - [ ] Add get function for milestones
+- [ ] Add post function for milestones
+- [ ] Add post function for application SBOMs
 - [ ] Add get function for hardware baseline
+- [ ] Add delete function for cloud resource scan
+- [ ] Add delete function for container scan 
+- [ ] Add argument checks for upload container SBOM function
+- [ ] Ensure output format in config file is used
+- [ ] Make the "systems" key in the config file optional
 - [ ] Add get function for workflow definitions
 - [ ] Add get function for workflow instances
 - [ ] Add get function for CMMC assessments
 - [ ] Add get function for CMMC SPRS ingest status
 - [ ] Add get function for dashboards
-- [ ] Add post function for application SBOMs
-- [ ] Add post function for static code scans
-- [ ] Add post function for device scan results
-- [ ] Add post function for container scan results
-- [ ] Add argument checks for upload container SBOM function
-- [ ] Ensure output format in config file is used
-- [ ] Make the "systems" key in the config file optional

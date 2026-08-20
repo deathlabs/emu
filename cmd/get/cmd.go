@@ -23,6 +23,7 @@ func init() {
 	Cmd.AddCommand(getControlApprovalsCmd)
 	Cmd.AddCommand(getDevicesCmd)
 	Cmd.AddCommand(getDeviceScanResultsCmd)
+	Cmd.AddCommand(getPoamsCmd)
 	Cmd.AddCommand(getPpsCmd)
 	Cmd.AddCommand(getStaticCodeScansCmd)
 	Cmd.AddCommand(getSystemsCmd)

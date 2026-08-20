@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	emuVersion   = "v4.0.4"
-	emassVersion = "v3.31.0"
+	emuVersion   = "v4.0.5"
+	emassVersion = "v3.32.0"
 )
 
 var (
