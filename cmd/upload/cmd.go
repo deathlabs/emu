@@ -13,9 +13,10 @@ var (
 
 func init() {
 	Cmd.AddCommand(uploadArtifactCmd)
-	Cmd.AddCommand(uploadCloudResourceResultsCmd)
+	Cmd.AddCommand(uploadCloudResourceScanCmd)
 	Cmd.AddCommand(uploadContainerSBOMCmd)
 	Cmd.AddCommand(uploadDeviceScanCmd)
 	Cmd.AddCommand(uploadPoamsCmd)
 	Cmd.AddCommand(uploadSoftwareBaselineCmd)
+	Cmd.AddCommand(uploadStaticCodeScanCmd)
 }

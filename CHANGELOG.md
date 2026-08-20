@@ -4,9 +4,11 @@
 ### Added
 - Added `emu get poams`
 - Added `emu upload poams`
+- Added `emu upload static-code-scan`
 
 ## Changed
 - The eMASS API guide version used for reference (not all functions were tested against the latest API version).
+- Changed `emu upload cloud-resource-results` to `emu upload cloud-resource-scan`
 
 ## [4.0.4] - 2026-08-18
 ### Added

@@ -1,0 +1,17 @@
+---
+- application:
+    applicationName: Artemis
+    version: Version 5.1
+  applicationFindings:
+    - rawSeverity: High
+      cweId: "155"
+      scanDate: 1628704605
+      codeCheckName: Redundant Check
+      count: 30
+      scanType: Semgrep
+    - rawSeverity: Critical
+      cweId: "14"
+      scanDate: 1628704605
+      codeCheckName: Hidden Field
+      count: 54
+      scanType: Semgrep
