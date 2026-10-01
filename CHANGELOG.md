@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.0.6] - 2026-10-1
+### Changed
+- Updated `golang.org/x/crypto` version
+- Updated how the version is set during build time
+
 ## [4.0.5] - 2026-08-19
 ### Added
 - Added `emu get poams`
