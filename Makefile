@@ -1,8 +1,9 @@
 # ---------------------------------------------------------
-# Set the default target.
+# Set default values.
 # ---------------------------------------------------------
 
 .DEFAULT_GOAL := build
+VERSION := $(shell date +%Y-%m-%d-%H%M%S)
 
 # ---------------------------------------------------------
 # Build the artifact.
@@ -12,7 +13,7 @@
 .SILENT: build
 
 build: 
-	go install -ldflags="-s -w" . 
+	go install -ldflags="-s -w -X 'github.com/deathlabs/emu/v4/cmd.version=$(VERSION)'" . 
 
 # ---------------------------------------------------------
 # Update dependencies.

@@ -16,7 +16,6 @@ import (
 )
 
 const (
-	emuVersion   = "v4.0.5"
 	emassVersion = "v3.32.0"
 )
 
@@ -24,8 +23,9 @@ var (
 	rootCmd = &cobra.Command{
 		Use:     "emu",
 		Short:   "eMASS Updater (EMU) is a tool for automating eMASS records management.",
-		Version: fmt.Sprintf("%s\neMASS API version %s", emuVersion, emassVersion),
+		Version: fmt.Sprintf("%s\neMASS API version %s", version, emassVersion),
 	}
+	version string
 )
 
 func Execute() {
