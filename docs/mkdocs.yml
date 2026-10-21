@@ -1,0 +1,5 @@
+---
+repo_url: https://deathlabs.github.io/emu/
+site_name: emu
+docs_dir: emu
+theme: readthedocs
