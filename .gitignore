@@ -31,7 +31,6 @@ go.work.sum
 # .idea/
 # .vscode/
 
-emu
 *.cer
 *.key
 .emu.yaml
