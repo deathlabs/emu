@@ -1,5 +1,28 @@
 ---
+site_name: EMU
 repo_url: https://deathlabs.github.io/emu/
-site_name: emu
-docs_dir: emu
+nav:
+  - 'User Guide':
+    - 'Artifacts': 'user-guide/artifacts.md'
+    - 'Cloud Resources': 'user-guide/cloud-resource-results.md'
+    - 'Containers': 'user-guide/container-scan-results.md'
+    - 'Controls': 'user-guide/controls.md'
+    - 'Hardware Baselines': 'user-guide/hardware-baseline.md'
+    - 'Device Scans': 'user-guide/device-scans.md'
+    - 'Test Results': 'user-guide/test-results.md'
+    - 'Static Code': 'user-guide/static-code-scans.md'
+    - 'POA&Ms': 'user-guide/poams.md'
+    - 'Bill of Materials': 'user-guide/boms.md'
+  - 'Use Cases':
+    - 'Updating eMASS in a CI Pipeline': 'use-cases/ci-pipeline.md'
+  - 'Developer Guide': 
+    - 'Prerequisites': 'developer-guide/prerequisites.md'
+    - 'Contribution Workflow': 'developer-guide/contribution-workflow.md'
+    - 'Running a Mock eMASS API Server': 'developer-guide/mock-api-server.md'
+    - 'Developing the CLI Version': 'developer-guide/developing-the-cli-version.md'
+    - 'Developing the GUI Version': 'developer-guide/developing-the-gui-version.md'
+    - 'Development Standards': 'developer-guide/development-standards.md'
+    - 'Git Standards': 'developer-guide/git-standards.md'
 theme: readthedocs
+extra_css:
+  - style.css
