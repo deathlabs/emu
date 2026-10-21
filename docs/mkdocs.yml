@@ -1,6 +1,7 @@
 ---
 site_name: EMU
 repo_url: https://deathlabs.github.io/emu/
+docs_dir: emu
 nav:
   - 'User Guide':
     - 'Artifacts': 'user-guide/artifacts.md'
