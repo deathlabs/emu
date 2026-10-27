@@ -3,20 +3,24 @@
 ## Upload an Artifact
 ```bash
 emu upload artifact \
-  -filename policy.pdf
+  --system-id 1984 \
+  --file policy.pdf
 ```
 
-## Delete an Artifact
+## Upload Multiple Artifacts
+
+To upload multiple artifacts, put the files in a ZIP archive and use `--is-bulk`.
+
 ```bash
-emu delete artifact \
-  -filename policy.pdf
+emu upload artifact \
+  --system-id 1984 \
+  --file policies.zip \
+  --is-bulk
 ```
 
-## Upload Multiple Files
-```bash
-emu upload artifacts \
-  -filename policies.zip -is-bulk=true
-```
+## Update and Delete Limitations
+
+The `emu update artifact` and `emu delete artifact` commands are placeholders. They do not send requests to eMASS, and they cannot update or delete artifacts in the current release.
 
 ## Get Artifacts
 
