@@ -73,20 +73,37 @@ For Ongoing POA&M items, the following fields are required:
 Additionally, for Completed and Risk Accepted POA&M items, the Comments field is also required.
 
 **Updating Existing POA&M Items**  
-When updating an existing POA&M item or milestone, ensure that the changes are applied to the latest version of the POA&M item. Export the latest copy via the POA&M Export page in eMASS before making any updates or use "./emu poams get -poam-id" to get the POA&M details.
+When updating an existing POA&M item or milestone, ensure that the changes are applied to the latest version of the POA&M item. Export the latest copy via the POA&M Export page in eMASS before making any updates or use `emu get poams` to get the POA&M details.
 
 **Multiple Inputs for Costs/Financial Fields**  
 For the optional financial fields (such as Cost Code and Non-Funding Obstacles), when entering multiple inputs, separate each value with a semicolon (`;`).
 
-## Get a POA&M
+## Get POA&Ms
+
+Use `emu get poams` to get POA&M items for the configured systems. Use the global `--system-id` flag to limit the request to one or more systems.
+
 ```bash
-emu get poam \
-  -poam-id 10100291212862
+emu get poams --system-id 1984
 ```
 
-## Get all POA&Ms
+Each result can contain fields such as `poamId`, `controlAcronym`, `assessmentProcedure`, `status`, `severity`, `scheduledCompletionDate`, `milestones`, and `vulnerabilityDescription`.
+
+## Filter POA&Ms
+
+Use the POA&M filters separately or together:
+
+* `--control-acronyms`: Filter by one or more control acronyms.
+* `--assessment-procedures`: Filter by one or more assessment procedures.
+* `--ccis`: Filter by one or more Control Correlation Identifiers (CCIs).
+* `--scheduled-completion-date-start`: Set the start of the scheduled completion date range.
+* `--scheduled-completion-date-end`: Set the end of the scheduled completion date range.
+* `--system-only`: Return only system-level POA&M items.
+
 ```bash
-emu get poam
+emu get poams \
+  --system-id 1984 \
+  --control-acronyms AC-1 \
+  --system-only
 ```
 
 ## Upload a POA&M
