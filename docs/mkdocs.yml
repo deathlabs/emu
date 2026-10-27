@@ -4,6 +4,7 @@ repo_url: https://deathlabs.github.io/emu/
 docs_dir: emu
 nav:
   - 'User Guide':
+    - 'Applications': 'user-guide/applications.md'
     - 'Artifacts': 'user-guide/artifacts.md'
     - 'Cloud Resources': 'user-guide/cloud-resource-results.md'
     - 'Containers': 'user-guide/container-scan-results.md'
@@ -13,6 +14,8 @@ nav:
     - 'Test Results': 'user-guide/test-results.md'
     - 'Static Code': 'user-guide/static-code-scans.md'
     - 'POA&Ms': 'user-guide/poams.md'
+    - 'System Roles': 'user-guide/system-roles.md'
+    - 'PAC Workflows': 'user-guide/workflows.md'
     - 'Bill of Materials': 'user-guide/boms.md'
   - 'Use Cases':
     - 'Updating eMASS in a CI Pipeline': 'use-cases/ci-pipeline.md'
