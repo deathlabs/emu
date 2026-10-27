@@ -31,7 +31,6 @@ go.work.sum
 # .idea/
 # .vscode/
 
-emu
 *.cer
 *.key
 .emu.yaml
@@ -40,3 +39,4 @@ sbom.json
 demo.md
 demo.ipynb
 *.nessus
+artifact.pdf

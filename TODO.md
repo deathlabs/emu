@@ -34,3 +34,28 @@
 - [ ] Add get function for CMMC assessments
 - [ ] Add get function for CMMC SPRS ingest status
 - [ ] Add get function for dashboards
+
+## More To-Dos
+
+- [x] Document and test all current `emu get` commands
+- [x] Validate the MkDocs documentation with `mkdocs build --strict`
+- [x] Validate artifact upload after enabling organization write access
+- [x] Validate device scan upload after enabling organization write access
+- [x] Validate software baseline upload after enabling organization write access
+- [x] Confirm `emu update artifact` is a placeholder and does not send an API request
+- [x] Confirm `emu delete artifact` is a placeholder and does not delete an artifact
+- [ ] Implement and test artifact update
+- [ ] Implement and test artifact deletion
+- [ ] Delete `emu-artifact-validation-2026-10-27.pdf` from eMASS after artifact deletion is implemented
+- [ ] Review and remove validation device scan and software baseline records if necessary
+- [ ] Validate `emu upload cloud-resource-scan`
+- [ ] Validate `emu upload container-sbom`
+- [ ] Validate `emu upload static-code-scan`
+- [ ] Validate `emu upload poams`
+- [ ] Validate `emu test api`
+- [ ] Inspect and validate the `emu create create` command
+- [ ] Reconcile documented commands that are not available in the current CLI
+- [ ] Fix the `pps --page-size` flag binding
+- [ ] Fix the `poams --assessment-procedures` flag binding
+- [ ] Verify the GET endpoint used by `cloud-resource-results`
+- [ ] Investigate the HTTP 403 response from `emu get pps`
