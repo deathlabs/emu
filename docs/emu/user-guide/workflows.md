@@ -5,7 +5,7 @@ Use `emu get workflows` to get Package Approval Chain (PAC) workflows for the co
 ## Get PAC Workflows
 
 ```bash
-emu get workflows --system-id 5815
+emu get workflows --system-id 1984
 ```
 
 The command can complete successfully without output when the system has no PAC workflow data available.

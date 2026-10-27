@@ -5,7 +5,7 @@ Use `emu get applications` to get the applications associated with the configure
 ## Get Applications
 
 ```bash
-emu get applications --system-id 5815
+emu get applications --system-id 1984
 ```
 
 The command returns an empty list when the system has no applications:
@@ -20,7 +20,7 @@ Use `--page-index` to select the result page and `--page-size` to set the maximu
 
 ```bash
 emu get applications \
-  --system-id 5815 \
+  --system-id 1984 \
   --page-index 0 \
   --page-size 5
 ```

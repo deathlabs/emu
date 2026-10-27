@@ -13,7 +13,7 @@ make
 export EMASS_API_URL="https://connect.emass.apps.mil"
 export EMASS_API_UID="1234567890"
 export EMASS_API_KEY="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
-export EMASS_SYSTEM_ID="1234"
+export EMASS_SYSTEM_ID="1984"
 export NPE_CERTIFICATE=$(cat SomeApp.cer)
 export NPE_KEY=$(cat SomeApp.pem)
 ```
