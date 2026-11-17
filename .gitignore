@@ -35,6 +35,8 @@ go.work.sum
 *.key
 .emu.yaml
 sbom.json
+scan.json
+vex.json
 *.xlsm
 demo.md
 demo.ipynb
