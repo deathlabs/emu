@@ -78,6 +78,20 @@ func Get(profile models.ConfigProfile, endpoint string) (*http.Response, error) 
 
 // Post sends an HTTP POST request and returns the HTTP response.
 func Post(profile models.ConfigProfile, endpoint string, headers map[string]string, body *bytes.Buffer) (*http.Response, error) {
+	return send(profile, http.MethodPost, endpoint, headers, body)
+}
+
+// Put sends an HTTP PUT request and returns the HTTP response.
+func Put(profile models.ConfigProfile, endpoint string, headers map[string]string, body *bytes.Buffer) (*http.Response, error) {
+	return send(profile, http.MethodPut, endpoint, headers, body)
+}
+
+// Delete sends an HTTP DELETE request and returns the HTTP response.
+func Delete(profile models.ConfigProfile, endpoint string, headers map[string]string, body *bytes.Buffer) (*http.Response, error) {
+	return send(profile, http.MethodDelete, endpoint, headers, body)
+}
+
+func send(profile models.ConfigProfile, method string, endpoint string, headers map[string]string, body *bytes.Buffer) (*http.Response, error) {
 	var (
 		client             *http.Client
 		err                error
@@ -94,7 +108,7 @@ func Post(profile models.ConfigProfile, endpoint string, headers map[string]stri
 	}
 
 	// Create an HTTP request for the specified endpoint.
-	request, err = http.NewRequest(http.MethodPost, endpoint, body)
+	request, err = http.NewRequest(method, endpoint, body)
 	if err != nil {
 		return nil, err
 	}

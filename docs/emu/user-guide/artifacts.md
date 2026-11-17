@@ -18,9 +18,46 @@ emu upload artifact \
   --is-bulk
 ```
 
-## Update and Delete Limitations
+## Update Artifacts
 
-The `emu update artifact` and `emu delete artifact` commands are placeholders. They do not send requests to eMASS, and they cannot update or delete artifacts in the current release.
+The update operation replaces all artifact metadata. Include all values that you want to keep.
+
+```bash
+emu update artifact \
+  --system-id 1984 \
+  --file artifact-update.yaml
+```
+
+The input file must contain a list of artifact records:
+
+```yaml
+- filename: policy.pdf
+  name: Security Policy
+  description: Approved security policy
+  isTemplate: false
+  type: Policy
+  category: Evidence
+  referencePageNumber: Page 1
+  controls: AC-1,AC-2
+  assessmentProcedures: AC-1.1,AC-1.2
+  expirationDate: 1790812800
+  lastReviewedDate: 1759276800
+  signedDate: 1759276800
+```
+
+## Delete Artifacts
+
+```bash
+emu delete artifact \
+  --system-id 1984 \
+  --file artifact-delete.yaml
+```
+
+The input file must contain a list of artifact filenames:
+
+```yaml
+- filename: policy.pdf
+```
 
 ## Get Artifacts
 
