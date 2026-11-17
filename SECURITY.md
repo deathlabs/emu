@@ -6,7 +6,10 @@ Security advisories use the Vulnerability Exploitability eXchange (VEX) standard
 
 Each advisory identifies a vulnerability, its associated product, its current status, and the rationale for that status. An advisory with a `not_affected` status includes a justification and an impact statement.
 
-For the latest security advisories, refer to [vex.yaml](vex.yaml).
+For the latest security advisories, refer to these files:
+
+* [vex.yaml](vex.yaml): VEX source data.
+* [vex.json](vex.json): Generated OpenVEX document.
 
 ## Reporting a Vulnerability
 
